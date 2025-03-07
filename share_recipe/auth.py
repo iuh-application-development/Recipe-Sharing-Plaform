@@ -11,25 +11,31 @@ bp = Blueprint('auth', __name__, url_prefix='/auth')
 @bp.route('/register', methods=('GET', 'POST'))
 def register():
     if request.method == 'POST':
-        username = request.form['username']
+        email = request.form['email']
         password = request.form['password']
+        username = request.form['username']
+        gender = request.form['gender']
+        birthdate = request.form['birthdate']
+        phone = request.form['phone']
         db = get_db()
         error = None
 
-        if not username:
-            error = 'Username is required.'
+        if not email:
+            error = 'Email is required.'
         elif not password:
             error = 'Password is required.'
+        elif not username:
+            error = 'Username is required.'
 
         if error is None:
             try:
                 db.execute(
-                    "INSERT INTO user (username, password) VALUES (?, ?)",
-                    (username, generate_password_hash(password)),
+                    "INSERT INTO user (email, password, username, gender, birthdate, phone) VALUES (?, ?, ?, ?, ?, ?)",
+                    (email, generate_password_hash(password), username, gender, birthdate, phone),
                 )
                 db.commit()
             except db.IntegrityError:
-                error = f"User {username} is already registered."
+                error = f"User {email} is already registered."
             else:
                 return redirect(url_for("auth.login"))
 
@@ -40,20 +46,21 @@ def register():
 @bp.route('/login', methods=('GET', 'POST'))
 def login():
     if request.method == 'POST':
-        username = request.form['username']
+        email = request.form['email']
         password = request.form['password']
         db = get_db()
         error = None
-        user = db.execute('SELECT * FROM user WHERE username = ?', (username,)).fetchone()
+        user = db.execute('SELECT * FROM user WHERE email = ?', (email,)).fetchone()
 
         if user is None:
-            error = 'Incorrect username.'
+            error = 'Incorrect email.'
         elif user and not check_password_hash(user['password'], password):
             error = 'Incorrect password.'
 
         if error is None:
             session.clear()
             session['user_id'] = user['id']
+            session['username'] = user['username'] # Lưu username vào session
             return redirect(url_for('index'))
 
         flash(error)
@@ -74,11 +81,11 @@ def load_logged_in_user():
         if user:
             user_dict = dict(user)
             is_blocked = user_dict.get('is_blocked')
-            if is_blocked is not None and bool(is_blocked):
+            if is_blocked:
                 g.user = None
                 session.clear()
                 flash('Tài khoản đã bị khóa. Mời đăng nhập lại.')
-                return redirect(url_for('auth.login')) # Thêm chuyển hướng
+                return redirect(url_for('auth.login'))
             else:
                 g.user = user
         else:
@@ -92,26 +99,26 @@ def logout():
 @bp.route('/create_admin', methods=('GET', 'POST'))
 def create_admin():
     if request.method == 'POST':
-        username = request.form['username']
+        email = request.form['email']
         password = request.form['password']
 
         db = get_db()
         error = None
 
-        if not username:
-            error = 'Username is required.'
+        if not email:
+            error = 'email is required.'
         elif not password:
             error = 'Password is required.'
 
         if error is None:
             try:
                 db.execute(
-                    "INSERT INTO user (username, password, role) VALUES (?, ?, ?)",
-                    (username, generate_password_hash(password), 'admin'),  # Gán vai trò admin
+                    "INSERT INTO user (email, password, role) VALUES (?, ?, ?)",
+                    (email, generate_password_hash(password), 'admin'),  # Gán vai trò admin
                 )
                 db.commit()
             except db.IntegrityError:
-                error = f"User {username} is already registered."
+                error = f"User {email} is already registered."
             else:
                 return redirect(url_for("index"))  # Chuyển hướng đến trang blog
 
@@ -136,6 +143,6 @@ def admin_users():
         abort(403)  # Chỉ admin mới có quyền truy cập
 
     db = get_db()
-    users = db.execute('SELECT id, username, role FROM user').fetchall()
+    users = db.execute('SELECT id, email, role FROM user').fetchall()
 
     return render_template('admin/users.html', users=users)

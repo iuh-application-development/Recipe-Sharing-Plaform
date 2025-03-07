@@ -1,0 +1,62 @@
+.admin-container {
+    display: flex;
+    height: calc(100vh - 60px); /* Chiều cao trừ chiều cao navbar */
+}
+
+.sidebar {
+    width: 250px;
+    background-color: #e9e2d9;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.avatar img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+}
+
+.admin-name {
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.menu a {
+    display: block;
+    padding: 10px 15px;
+    margin-bottom: 10px;
+    background-color: #333;
+    color: white;
+    text-decoration: none;
+    border-radius: 25px;
+    width: 100%;
+    text-align: center;
+}
+
+.menu a:hover {
+    background-color: #555;
+}
+
+.content {
+    flex-grow: 1;
+    padding: 20px;
+}
+
+.recipes {
+    display: flex;
+    justify-content: space-around;
+}
+
+.recipe {
+    text-align: center;
+}
+
+.recipe img {
+    width: 200px;
+    height: 150px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}

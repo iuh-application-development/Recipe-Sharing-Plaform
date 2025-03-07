@@ -3,10 +3,14 @@ DROP TABLE IF EXISTS post;
 
 CREATE TABLE user (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username TEXT UNIQUE NOT NULL,
+    email TEXT UNIQUE NOT NULL,
     password TEXT NOT NULL,
+    username TEXT NOT NULL,
+    gender TEXT,
+    birthdate TEXT,
+    phone TEXT,
     role TEXT NOT NULL DEFAULT 'user',
-    is_blocked INTEGER NOT NULL DEFAULT 0 
+    is_blocked INTEGER NOT NULL DEFAULT 0
 );
 
 CREATE TABLE post (

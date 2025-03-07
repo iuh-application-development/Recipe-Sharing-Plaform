@@ -1,15 +1,22 @@
 {% extends 'base.html' %}
 
-{% block header %}
-    <h1>{% block title %}Log In{% endblock %}</h1>
-{% endblock %}
+{% block title %}Log in{% endblock %}
 
 {% block content %}
-    <form method="post">
-        <label for="username">Username</label>
-        <input name="username" id="username" required>
-        <label for="password">Password</label>
-        <input type="password" name="password" id="password" required>
-        <input type="submit" value="Log In">
-    </form>
+    <div class="login-content">
+        <div class="login-container">
+            <h1>Log in</h1>
+            <form method="post">
+                <label for="email">Email</label>
+                <input type="text" name="email" id="email" required>
+                <label for="password">Password</label>
+                <input type="password" name="password" id="password" required>
+                <input type="submit" value="Log In">
+            </form>
+            <a href="{{ url_for('auth.register') }}" class="register-link link-button">Register</a>
+            <div class="forgot-password">
+                <a href="#" class="link-button">Forgot password</a>
+            </div>
+        </div>
+    </div>
 {% endblock %}

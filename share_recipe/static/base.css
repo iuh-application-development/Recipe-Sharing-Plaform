@@ -1,0 +1,92 @@
+body {
+    font-family: sans-serif;
+    margin: 0;
+    background-color: #f0e6d2;
+    padding-top: 60px; 
+}
+
+.navbar {
+    background-color: #f0e6d2;
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    position: fixed; /* Cố định vị trí thanh bar */
+    top: 0;
+    left: 0;
+    width: 100%; /* Đảm bảo thanh bar kéo dài hết chiều rộng */
+    z-index: 100; /* Đảm bảo thanh bar nằm trên cùng */
+}
+
+.logo {
+    margin-right: 20px;
+}
+
+.logo img {
+    width: 50px; /* Đặt chiều rộng cụ thể */
+    height: auto; /* Tự động điều chỉnh chiều cao */
+}
+
+.search-box {
+    width: 600px;
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 25px;
+    padding: 5px 5px;
+    margin-right: 20px;
+}
+
+.search-box input[type="text"] {
+    border: none;
+    outline: none;
+    flex-grow: 1;
+    padding: 5px;
+}
+
+.search-box button {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+}
+
+.actions a {
+    margin-left: 15px;
+    text-decoration: none;
+    color: #333;
+}
+
+.actions a.login-button {
+    background-color: #333;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 25px;
+}
+
+.actions a.login-button:hover {
+    background-color: #555;
+}
+
+.actions .user-name {
+    margin-left: 15px;
+    color: #333;
+}
+
+.actions .logout-button {
+    background-color: #333;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 25px;
+    margin-left: 15px;
+    text-decoration: none;
+}
+
+.actions .logout-button:hover {
+    background-color: #555;
+}

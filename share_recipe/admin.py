@@ -36,27 +36,27 @@ def create_user():
         return redirect(url_for('index'))
 
     if request.method == 'POST':
-        username = request.form['username']
+        email = request.form['email']
         password = request.form['password']
         role = request.form['role']
 
         db = get_db()
         error = None
 
-        if not username:
-            error = 'Username is required.'
+        if not email:
+            error = 'email is required.'
         elif not password:
             error = 'Password is required.'
 
         if error is None:
             try:
                 db.execute(
-                    "INSERT INTO user (username, password, role) VALUES (?, ?, ?)",
-                    (username, generate_password_hash(password), role),
+                    "INSERT INTO user (email, password, role) VALUES (?, ?, ?)",
+                    (email, generate_password_hash(password), role),
                 )
                 db.commit()
             except db.IntegrityError:
-                error = f"User {username} is already registered."
+                error = f"User {email} is already registered."
             else:
                 return redirect(url_for("admin.users"))
 
@@ -131,26 +131,26 @@ def update_user(id):
         abort(404)
 
     if request.method == 'POST':
-        username = request.form['username']
+        email = request.form['email']
         role = request.form['role']
         # ... (lấy các dữ liệu khác từ form)
 
         db = get_db()
         error = None
 
-        if not username:
-            error = 'Username is required.'
+        if not email:
+            error = 'email is required.'
         # ... (kiểm tra các trường dữ liệu khác)
 
         if error is None:
             try:
                 db.execute(
-                    'UPDATE user SET username = ?, role = ? WHERE id = ?',
-                    (username, role, id)  # Cập nhật các trường dữ liệu khác
+                    'UPDATE user SET email = ?, role = ? WHERE id = ?',
+                    (email, role, id)  # Cập nhật các trường dữ liệu khác
                 )
                 db.commit()
             except db.IntegrityError:
-                error = f"User {username} is already registered."
+                error = f"User {email} is already registered."
             else:
                 return redirect(url_for('admin.users'))
 

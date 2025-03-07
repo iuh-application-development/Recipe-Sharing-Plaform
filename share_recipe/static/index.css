@@ -1,0 +1,63 @@
+body {
+    background-color: #f2e8e1;
+    font-family: 'Georgia', serif;
+    margin: 20px 0;
+    padding: 20px;
+}
+
+.header-title {
+    text-align: center;
+    margin-bottom: 30px;
+    margin-top: 60px; 
+}
+
+
+.header-title h1 {
+    font-size: 2.5em; /* Kích thước tiêu đề */
+    color: #333; /* Màu chữ */
+    margin-bottom: 10px;
+}
+
+.header-title p {
+    font-size: 1.1em; /* Kích thước đoạn văn */
+    color: #666; /* Màu chữ */
+    text-transform: uppercase; /* Chữ in hoa */
+    letter-spacing: 2px; /* Khoảng cách chữ */
+}
+
+.recipe-section {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.recipe-section h2 {
+    font-size: 1.8em; /* Kích thước tiêu đề phần công thức */
+    color: #333; /* Màu chữ */
+    margin-bottom: 20px;
+}
+
+.recipe-card {
+    background-color: #fff; /* Màu nền thẻ công thức */
+    border-radius: 10px; /* Bo góc thẻ */
+    overflow: hidden; /* Ẩn nội dung tràn ra ngoài */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Tạo bóng đổ */
+    transition: transform 0.3s ease; /* Hiệu ứng chuyển động */
+}
+
+.recipe-card:hover {
+    transform: translateY(-5px); /* Hiệu ứng nâng lên khi hover */
+}
+
+.recipe-card img {
+    width: 100%; /* Chiều rộng ảnh 100% */
+    height: auto;
+    display: block; /* Loại bỏ khoảng trắng thừa */
+}
+
+.recipe-card h3 {
+    padding: 20px; /* Padding cho tiêu đề công thức */
+    margin: 0;
+    font-size: 1.2em; /* Kích thước tiêu đề công thức */
+    color: #333; /* Màu chữ */
+    text-align: center; /* Căn giữa tiêu đề */
+}

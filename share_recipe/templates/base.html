@@ -1,34 +1,48 @@
-<!doctype html>
-<title>{% block title %}{% endblock %} - Flaskr</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-<nav>
-    <h1>Flaskr</h1>
-    <ul>
-        {% if g.user %}
-            <li><span>{{ g.user['username'] }}</span>
-            {% if g.user['role'] == 'admin' %}
-                <li><a href="{{ url_for('admin.users') }}">Admin</a>
-            {% endif %}
-            <li><a href="{{ url_for('auth.logout') }}">Log Out</a>
-        {% else %}
-            <li><a href="{{ url_for('auth.register') }}">Register</a>
-            <li><a href="{{ url_for('auth.login') }}">Log In</a>
-        {% endif %}
-    </ul>
-</nav>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}{% endblock %} - Cook & Share</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='register.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <button class="navbar-toggler" type="button">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <a class="navbar-brand" href="#">
+                <img src="{{ url_for('static', filename='logo1.png') }}" alt="Cook & Share">
+            </a>
 
-<section class="content">
-    <header>
-        {% block header %}{% endblock %}
-    </header>
+            <div class="search-box">
+                <input type="text" placeholder="Search recipes...">
+                <span class="close-btn">&times;</span>
+            </div>
 
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-danger">{{ message }}</div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
+            <div class="user-actions">
+                <button class="btn btn-dark btn-custom">
+                    <i class="fas fa-plus"></i>
+                </button>
+                {% if g.user %}
+                <span class="user-name">{{ g.user['username'] }}</span>
+                <a href="{{ url_for('auth.logout') }}" class="btn btn-dark btn-custom">Logout</a>
+                {% else %}
+                <a href="{{ url_for('auth.login') }}" class="btn btn-dark btn-custom">Log In</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
 
-    {% block content %}{% endblock %}
-</section>
+    <div class="content">
+        {% block content %}{% endblock %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
