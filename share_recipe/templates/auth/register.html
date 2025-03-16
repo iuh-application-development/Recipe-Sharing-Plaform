@@ -1,38 +1,82 @@
 {% extends 'base.html' %}
 
-{% block title %}Register{% endblock %}
+{% block title %}Đăng ký{% endblock %}
 
 {% block content %}
     <div class="register-content">
         <div class="register-container">
-            <h1>Register</h1>
-            <form method="post">
-                <label for="email">Email</label>
-                <input type="email" name="email" id="email" required>
+            <h1>Đăng ký tài khoản</h1>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="flash-message {% if 'error' in message.lower() %}error{% else %}success{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            <form method="post" class="register-form" onsubmit="return validateForm()">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" name="email" id="email" required>
+                </div>
 
-                <label for="username">Username</label>
-                <input type="text" name="username" id="username" required>
+                <div class="form-group">
+                    <label for="username">Tên người dùng</label>
+                    <input type="text" name="username" id="username" required>
+                </div>
 
-                <label for="password">Password</label>
-                <input type="password" name="password" id="password" required>
+                <div class="form-group">
+                    <label for="password">Mật khẩu</label>
+                    <input type="password" name="password" id="password" required>
+                </div>
 
-                <label for="gender">Gender</label>
-                <select name="gender" id="gender">
-                    <option value="">Select Gender</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="other">Other</option>
-                </select>
+                <div class="form-group">
+                    <label for="confirm_password">Xác nhận mật khẩu</label>
+                    <input type="password" name="confirm_password" id="confirm_password" required>
+                    <span id="password-error" class="error-message"></span>
+                </div>
 
-                <label for="birthdate">Birthdate</label>
-                <input type="date" name="birthdate" id="birthdate">
+                <div class="form-group">
+                    <label for="gender">Giới tính</label>
+                    <select name="gender" id="gender">
+                        <option value="">Chọn giới tính</option>
+                        <option value="male">Nam</option>
+                        <option value="female">Nữ</option>
+                        <option value="other">Khác</option>
+                    </select>
+                </div>
 
-                <label for="phone">Phone Number</label>
-                <input type="tel" name="phone" id="phone">
+                <div class="form-group">
+                    <label for="birthdate">Ngày sinh</label>
+                    <input type="date" name="birthdate" id="birthdate">
+                </div>
 
-                <input type="submit" value="Register">
+                <div class="form-group">
+                    <label for="phone">Số điện thoại</label>
+                    <input type="tel" name="phone" id="phone">
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-submit">Đăng ký</button>
+                    <a href="{{ url_for('auth.login') }}" class="btn-link">Đã có tài khoản? Đăng nhập</a>
+                </div>
             </form>
-            <a href="{{ url_for('auth.login') }}" class="register-link link-button">Log In</a>
         </div>
     </div>
+
+    <script>
+        function validateForm() {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm_password').value;
+            const errorElement = document.getElementById('password-error');
+
+            if (password !== confirmPassword) {
+                errorElement.textContent = 'Mật khẩu không khớp!';
+                return false;
+            }
+            errorElement.textContent = '';
+            return true;
+        }
+    </script>
 {% endblock %}

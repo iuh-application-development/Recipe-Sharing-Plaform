@@ -1,16 +1,91 @@
 {% extends 'base.html' %}
 
-{% block header %}
-  <h1>{% block title %}Edit "{{ post['title'] }}"{% endblock %}</h1>
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='detail.css') }}">
 {% endblock %}
 
+{% block title %}{{ post['title'] }}{% endblock %}
+
 {% block content %}
-<form method="post">
-    <label for="title">Title</label>
-    <input name="title" id="title"
-      value="{{ request.form['title'] or post['title'] }}" required>
-    <label for="body">Body</label>
-    <textarea name="body" id="body">{{ request.form['body'] or post['body'] }}</textarea>
-  </form>
-  <hr>
+<div class="recipe-detail-container">
+    <div class="recipe-header">
+        <h1 class="recipe-title">{{ post['title'] }}</h1>
+        <div class="recipe-meta">
+            <span class="author">
+                <i class="fas fa-user"></i> {{ post['username'] }}
+            </span>
+            <span class="date">
+                <i class="fas fa-calendar"></i> {{ post['created'].strftime('%d-%m-%Y') }}
+            </span>
+        </div>
+    </div>
+
+    <div class="recipe-content">
+        <div class="recipe-image">
+            {% if post.get('image_path') %}
+                <img src="{{ url_for('static', filename=post.image_path) }}" alt="{{ post['title'] }}">
+            {% else %}
+                <img src="{{ url_for('static', filename='default-recipe.jpg') }}" alt="{{ post['title'] }}">
+            {% endif %}
+        </div>
+
+        <div class="recipe-info-grid">
+            <div class="info-card cooking-time">
+                <i class="fas fa-clock"></i>
+                <h3>Thời gian nấu</h3>
+                <p>{{ post['cooking_time']|default(0) }} phút</p>
+            </div>
+            <div class="info-card servings">
+                <i class="fas fa-users"></i>
+                <h3>Khẩu phần</h3>
+                <p>{{ post['servings']|default(1) }} người</p>
+            </div>
+        </div>
+
+        {% if post.get('description') %}
+        <div class="recipe-section description">
+            <h2>Mô tả</h2>
+            <p>{{ post['description'] }}</p>
+        </div>
+        {% endif %}
+
+        <div class="recipe-section ingredients">
+            <h2>Nguyên liệu</h2>
+            <ul class="ingredients-list">
+                {% for ingredient in post['ingredients'].split('\n') if ingredient.strip() %}
+                    <li>
+                        <i class="fas fa-check"></i>
+                        <span>{{ ingredient }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="recipe-section instructions">
+            <h2>Cách làm</h2>
+            <div class="instructions-list">
+                {% for step in post['instructions'].split('\n') if step.strip() %}
+                    <div class="instruction-step">
+                        <div class="step-number">{{ loop.index }}</div>
+                        <p>{{ step }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    {% if g.user and g.user['id'] == post['author_id'] %}
+        <div class="recipe-actions">
+            <a href="{{ url_for('blog.update', id=post['id']) }}" class="btn btn-edit">
+                <i class="fas fa-edit"></i> Chỉnh sửa
+            </a>
+            <form action="{{ url_for('blog.delete', id=post['id']) }}" method="post" class="delete-form">
+                <button class="btn btn-delete" onclick="return confirm('Bạn có chắc chắn muốn xóa?');">
+                    <i class="fas fa-trash"></i> Xóa
+                </button>
+            </form>
+        </div>
+    {% endif %}
+</div>
 {% endblock %}

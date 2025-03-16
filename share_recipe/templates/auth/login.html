@@ -1,22 +1,37 @@
 {% extends 'base.html' %}
 
-{% block title %}Log in{% endblock %}
+{% block title %}Đăng nhập{% endblock %}
 
 {% block content %}
     <div class="login-content">
         <div class="login-container">
-            <h1>Log in</h1>
-            <form method="post">
-                <label for="email">Email</label>
-                <input type="text" name="email" id="email" required>
-                <label for="password">Password</label>
-                <input type="password" name="password" id="password" required>
-                <input type="submit" value="Log In">
+            <h1>Đăng nhập</h1>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="flash-message {% if 'error' in message.lower() %}error{% else %}success{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            <form method="post" class="login-form">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" name="email" id="email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Mật khẩu</label>
+                    <input type="password" name="password" id="password" required>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-submit">Đăng nhập</button>
+                    <a href="{{ url_for('auth.register') }}" class="btn-link">Chưa có tài khoản? Đăng ký</a>
+                    <a href="#" class="btn-link forgot-password">Quên mật khẩu?</a>
+                </div>
             </form>
-            <a href="{{ url_for('auth.register') }}" class="register-link link-button">Register</a>
-            <div class="forgot-password">
-                <a href="#" class="link-button">Forgot password</a>
-            </div>
         </div>
     </div>
 {% endblock %}

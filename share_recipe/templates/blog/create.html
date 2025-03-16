@@ -1,15 +1,97 @@
 {% extends 'base.html' %}
 
-{% block header %}
-  <h1>{% block title %}New Post{% endblock %}</h1>
+{% block title %}Tạo Công Thức Mới{% endblock %}
+
+{% block head %}
+  {{ super() }}
+  <link rel="stylesheet" href="{{ url_for('static', filename='create.css') }}">
 {% endblock %}
 
 {% block content %}
-  <form method="post">
-    <label for="title">Title</label>
-    <input name="title" id="title" value="{{ request.form['title'] }}" required>
-    <label for="body">Body</label>
-    <textarea name="body" id="body">{{ request.form['body'] }}</textarea>
-    <input type="submit" value="Save">
-  </form>
+<div class="create-container">
+    <h2 class="create-title">Share your recipe with us</h2>
+    
+    <form method="post" enctype="multipart/form-data" class="recipe-form">
+        <div class="form-section">
+            <label for="title" class="form-label">Tên món ăn</label>
+            <input type="text" class="form-control" name="title" id="title" required>
+        </div>
+
+        <div class="form-section">
+            <label for="description" class="form-label">Mô tả ngắn về món ăn</label>
+            <textarea class="form-control" name="description" id="description" rows="3"></textarea>
+        </div>
+
+        <div class="form-section">
+            <label for="ingredients" class="form-label">Nguyên liệu</label>
+            <textarea class="form-control" name="ingredients" id="ingredients" 
+                      rows="6" placeholder="Mỗi nguyên liệu một dòng"></textarea>
+        </div>
+
+        <div class="form-section">
+            <label for="instructions" class="form-label">Cách làm</label>
+            <textarea class="form-control" name="instructions" id="instructions" 
+                      rows="8" placeholder="Hướng dẫn chi tiết cách nấu"></textarea>
+        </div>
+
+        <div class="form-row">
+            <div class="form-section half">
+                <label for="cooking_time" class="form-label">Thời gian nấu (phút)</label>
+                <input type="number" class="form-control" name="cooking_time" id="cooking_time">
+            </div>
+            <div class="form-section half">
+                <label for="servings" class="form-label">Số người ăn</label>
+                <input type="number" class="form-control" name="servings" id="servings">
+            </div>
+        </div>
+
+        <div class="form-section">
+            <label for="image" class="form-label">Hình ảnh món ăn</label>
+            <input type="file" class="form-control" name="image" id="image" accept="image/*">
+            <div class="image-preview" id="imagePreview"></div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Đăng công thức</button>
+            <a href="{{ url_for('blog.index') }}" class="btn btn-secondary">Hủy</a>
+        </div>
+    </form>
+</div>
+
+<script>
+document.getElementById('image').addEventListener('change', function(e) {
+    const preview = document.getElementById('imagePreview');
+    preview.innerHTML = '';
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.className = 'preview-image';
+            preview.appendChild(img);
+        }
+        reader.readAsDataURL(file);
+    }
+});
+</script>
+
+<style>
+.recipe-form {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.form-label {
+    font-weight: bold;
+}
+
+textarea {
+    resize: vertical;
+}
+</style>
 {% endblock %}

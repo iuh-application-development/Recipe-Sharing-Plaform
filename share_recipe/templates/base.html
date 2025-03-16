@@ -2,42 +2,104 @@
 <html>
 <head>
     <title>{% block title %}{% endblock %} - Cook & Share</title>
+    <!-- Thêm Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    {% block head %}
     <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='register.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='detail.css') }}">
+    {% endblock %}
 </head>
 <body>
     <nav class="navbar navbar-expand-lg">
         <div class="container">
-            <button class="navbar-toggler" type="button">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            
-            <a class="navbar-brand" href="#">
+            <a class="navbar-brand" href="{{ url_for('blog.index') }}">
                 <img src="{{ url_for('static', filename='logo1.png') }}" alt="Cook & Share">
             </a>
 
-            <div class="search-box">
-                <input type="text" placeholder="Search recipes...">
-                <span class="close-btn">&times;</span>
+            <div class="search-container">
+                <div class="search-box">
+                    <input type="text" class="search-input" placeholder="Tìm kiếm công thức...">
+                    <button class="search-button">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
             </div>
 
             <div class="user-actions">
-                <button class="btn btn-dark btn-custom">
-                    <i class="fas fa-plus"></i>
-                </button>
                 {% if g.user %}
-                <span class="btn btn-dark btn-custom">{{ g.user['username'] }}</span>
-                <a href="{{ url_for('auth.logout') }}" class="btn btn-dark btn-custom">Logout</a>
+                    <a href="{{ url_for('blog.create') }}" class="btn btn-dark btn-custom" title="Tạo công thức mới">
+                        <i class="fas fa-plus"></i>
+                    </a>
+                    <div class="dropdown">
+                        <button class="btn btn-dark btn-custom dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            {% if g.user.avatar_path %}
+                                <img src="{{ url_for('static', filename=g.user.avatar_path) }}" class="user-avatar" alt="Avatar">
+                            {% else %}
+                                <i class="fas fa-user"></i>
+                            {% endif %}
+                            {{ g.user['username'] }}
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('auth.profile') }}">
+                                    <i class="fas fa-user-circle"></i> Hồ sơ của tôi
+                                </a>
+                            </li>
+                            {% if g.user['role'] == 'admin' %}
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('admin.dashboard') }}">
+                                        <i class="fas fa-dashboard"></i> Quản lý
+                                    </a>
+                                </li>
+                            {% endif %}
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-heart"></i> Công thức yêu thích
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('auth.logout') }}">
+                                    <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                 {% else %}
-                <a href="{{ url_for('auth.login') }}" class="btn btn-dark btn-custom">Log In</a>
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-dark btn-custom">
+                        <i class="fas fa-sign-in-alt"></i> Đăng nhập
+                    </a>
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-dark btn-custom">
+                        <i class="fas fa-user-plus"></i> Đăng ký
+                    </a>
                 {% endif %}
             </div>
         </div>
     </nav>
+
+    <!-- Thêm div này để tránh content bị che khi navbar fixed -->
+    <div class="navbar-spacer"></div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category if category != 'message' else 'info' }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
 
     <div class="content">
         {% block content %}{% endblock %}

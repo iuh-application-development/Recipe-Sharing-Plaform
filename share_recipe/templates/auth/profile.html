@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='profile.css') }}">
+{% endblock %}
+
+{% block title %}Hồ sơ người dùng{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <div class="profile-header">
+        <div class="profile-avatar">
+            {% if g.user.avatar_path %}
+                <img src="{{ url_for('static', filename=g.user.avatar_path) }}" alt="Avatar">
+            {% else %}
+                <img src="{{ url_for('static', filename='default-avatar.png') }}" alt="Default Avatar">
+            {% endif %}
+        </div>
+        <h1>{{ g.user['username'] }}</h1>
+        <p class="user-role">{{ g.user['role']|title }}</p>
+    </div>
+
+    <div class="profile-content">
+        <div class="profile-section user-info">
+            <h2>Thông tin cá nhân</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <label>Email</label>
+                    <p>{{ g.user['email'] }}</p>
+                </div>
+                <div class="info-item">
+                    <label>Mật khẩu</label>
+                    <p>••••••••</p>
+                </div>
+                <div class="info-item">
+                    <label>Giới tính</label>
+                    <p>{{ g.user['gender']|title if g.user['gender'] else 'Chưa cập nhật' }}</p>
+                </div>
+                <div class="info-item">
+                    <label>Ngày sinh</label>
+                    <p>{{ g.user['birthdate'] if g.user['birthdate'] else 'Chưa cập nhật' }}</p>
+                </div>
+                <div class="info-item">
+                    <label>Số điện thoại</label>
+                    <p>{{ g.user['phone'] if g.user['phone'] else 'Chưa cập nhật' }}</p>
+                </div>
+            </div>
+            <div class="profile-actions">
+                <a href="{{ url_for('auth.edit_profile') }}" class="btn btn-edit">
+                    <i class="fas fa-edit"></i> Chỉnh sửa thông tin
+                </a>
+                <a href="{{ url_for('auth.change_password') }}" class="btn btn-change-password">
+                    <i class="fas fa-key"></i> Đổi mật khẩu
+                </a>
+            </div>
+        </div>
+
+        <div class="profile-section user-recipes">
+            <h2>Công thức của tôi</h2>
+            <div class="recipe-grid">
+                {% for post in user_posts %}
+                <div class="recipe-card">
+                    <a href="{{ url_for('blog.detail', id=post['id']) }}" class="recipe-link">
+                        <div class="recipe-image">
+                            {% if post.image_path %}
+                                <img src="{{ url_for('static', filename=post.image_path) }}" 
+                                     alt="{{ post['title'] }}">
+                            {% else %}
+                                <img src="{{ url_for('static', filename='default-recipe.jpg') }}" 
+                                     alt="{{ post['title'] }}">
+                            {% endif %}
+                        </div>
+                        <div class="recipe-info">
+                            <h3 class="recipe-title">{{ post['title'] }}</h3>
+                            <div class="recipe-meta">
+                                <span><i class="fas fa-calendar"></i> {{ post['created'].strftime('%d-%m-%Y') }}</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                {% else %}
+                <p class="no-recipes">Bạn chưa có công thức nào.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

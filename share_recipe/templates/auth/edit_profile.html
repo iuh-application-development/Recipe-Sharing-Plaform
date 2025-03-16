@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='profile.css') }}">
+{% endblock %}
+
+{% block title %}Chỉnh sửa hồ sơ{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <div class="edit-profile-section">
+        <h1>Chỉnh sửa thông tin cá nhân</h1>
+        
+        <form method="post" class="edit-form" enctype="multipart/form-data">
+            <div class="avatar-upload">
+                <div class="current-avatar">
+                    {% if g.user.avatar_path %}
+                        <img src="{{ url_for('static', filename=g.user.avatar_path) }}" alt="Current Avatar">
+                    {% else %}
+                        <img src="{{ url_for('static', filename='default-avatar.png') }}" alt="Default Avatar">
+                    {% endif %}
+                </div>
+                <div class="avatar-input">
+                    <label for="avatar">Thay đổi ảnh đại diện</label>
+                    <input type="file" id="avatar" name="avatar" accept="image/*">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="username">Tên người dùng</label>
+                <input type="text" id="username" name="username" 
+                       value="{{ g.user['username'] }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" 
+                       value="{{ g.user['email'] }}" readonly>
+                <small>Email không thể thay đổi</small>
+            </div>
+
+            <div class="form-group">
+                <label for="gender">Giới tính</label>
+                <select id="gender" name="gender">
+                    <option value="">Chọn giới tính</option>
+                    <option value="male" {% if g.user['gender'] == 'male' %}selected{% endif %}>Nam</option>
+                    <option value="female" {% if g.user['gender'] == 'female' %}selected{% endif %}>Nữ</option>
+                    <option value="other" {% if g.user['gender'] == 'other' %}selected{% endif %}>Khác</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="birthdate">Ngày sinh</label>
+                <input type="date" id="birthdate" name="birthdate" 
+                       value="{{ g.user['birthdate'] }}">
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Số điện thoại</label>
+                <input type="tel" id="phone" name="phone" 
+                       value="{{ g.user['phone'] }}">
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-save">
+                    <i class="fas fa-save"></i> Lưu thay đổi
+                </button>
+                <a href="{{ url_for('auth.profile') }}" class="btn btn-cancel">
+                    <i class="fas fa-times"></i> Hủy
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %} 

@@ -1,11 +1,7 @@
 {% extends 'base.html' %}
 
 {% block header %}
-    <h1>{% block title %}Posts{% endblock %}</h1>
-    {% if g.user %}
-        <a class="action" href="{{ url_for('blog.delete_multiple') }}">Delete</a>
-        <a class="action" href="{{ url_for('blog.create') }}">New</a>
-    {% endif %}
+    <h1>{% block title %}Công thức nấu ăn{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
@@ -14,64 +10,77 @@
         <p>GREAT FOOD IS MEANT TO BE SHARED</p>
     </div>
 
-    <div class="container">  {% for post in posts %}
-            <article class="post">
-                <header>
-                    <div>
-                        <h1>
-                            <a href="{{ url_for('blog.detail', id=post['id']) }}">{{ post['title'] }}</a>
-                        </h1>
-                        <div class="about">by {{ post['username'] }} on {{ post['created'].strftime('%Y-%m-%d') }}</div>
-                    </div>
-                    {% if g.user['id'] == post['author_id'] %}
-                        <a class="action" href="{{ url_for('blog.update', id=post['id']) }}">Edit</a>
-                    {% endif %}
-                </header>
-                <p class="body">{{ post['body'] }}</p>
-            </article>
-            {% if not loop.last %}
-                <hr>
-            {% endif %}
-        {% endfor %}
-
-        <!-- <nav aria-label="Page navigation">
-            <ul class="pagination">
-                <li class="page-item {% if page == 1 %}disabled{% endif %}">
-                    <a class="page-link" href="{{ url_for('blog.index', page=page-1) }}">&laquo;</a>
-                </li>
-                {% for p in range(1, total_pages + 1) %}
-                    <li class="page-item {% if page == p %}active{% endif %}">
-                        <a class="page-link" href="{{ url_for('blog.index', page=p) }}">{{ p }}</a>
-                    </li>
-                {% endfor %}
-                <li class="page-item {% if page == total_pages %}disabled{% endif %}">
-                    <a class="page-link" href="{{ url_for('blog.index', page=page+1) }}">&raquo;</a>
-                </li>
-            </ul>
-        </nav> -->
-    </div>  <section class="recipe-section">
+    <section class="recipe-section">
         <div class="container">
-            <h2>New Recipes</h2>
-            <div class="row g-4">
-                <div class="col-md-4">
+            <div class="recipe-container">
+                <h2 class="section-title">Công Thức Mới Nhất</h2>
+                <div class="recipe-row">
+                    {% for post in posts %}
                     <div class="recipe-card">
-                        <img src="{{ url_for('static', filename='tomato-dish.jpg') }}" alt="Cooking with Tomatoes">
-                        <h3>Cooking with Tomatoes</h3>
+                        <a href="{{ url_for('blog.detail', id=post['id']) }}" class="recipe-link">
+                            <div class="recipe-image">
+                                {% if post.image_path %}
+                                    <img src="{{ url_for('static', filename=post.image_path) }}" 
+                                         alt="{{ post['title'] }}">
+                                {% else %}
+                                    <img src="{{ url_for('static', filename='default-recipe.jpg') }}" 
+                                         alt="{{ post['title'] }}">
+                                {% endif %}
+                            </div>
+                            <div class="recipe-info">
+                                <h3 class="recipe-title" data-title="{{ post['title'] }}">{{ post['title'] }}</h3>
+                            </div>
+                        </a>
                     </div>
+                    {% endfor %}
                 </div>
-                <div class="col-md-4">
-                    <div class="recipe-card">
-                        <img src="{{ url_for('static', filename='lentils-dish.jpg') }}" alt="Cooking with Lentils">
-                        <h3>Cooking with Lentils</h3>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="recipe-card">
-                        <img src="{{ url_for('static', filename='tomato-meat-dish.jpg') }}" alt="Cooking with Tomatoes">
-                        <h3>Cooking with Tomatoes</h3>
-                    </div>
-                </div>
+
+                <!-- Phân trang -->
+                <nav aria-label="Page navigation" class="pagination-container">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item {% if page == 1 %}disabled{% endif %}">
+                            <a class="page-link" href="{{ url_for('blog.index', page=page-1) }}">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                        </li>
+                        {% for p in range(1, total_pages + 1) %}
+                            <li class="page-item {% if page == p %}active{% endif %}">
+                                <a class="page-link" href="{{ url_for('blog.index', page=p) }}">{{ p }}</a>
+                            </li>
+                        {% endfor %}
+                        <li class="page-item {% if page == total_pages %}disabled{% endif %}">
+                            <a class="page-link" href="{{ url_for('blog.index', page=page+1) }}">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
             </div>
         </div>
     </section>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const titles = document.querySelectorAll('.recipe-title');
+        
+        titles.forEach(title => {
+            adjustFontSize(title);
+        });
+
+        function adjustFontSize(element) {
+            const maxLength = 50; // Ngưỡng độ dài tiêu đề
+            const text = element.getAttribute('data-title');
+            const length = text.length;
+
+            if (length > maxLength) {
+                // Tính toán font size mới
+                const baseFontSize = 0.8; // Font size cơ bản (rem)
+                const reduction = Math.min((length - maxLength) * 0.01, 0.3); // Giảm tối đa 0.3rem
+                const newFontSize = Math.max(baseFontSize - reduction, 0.5); // Không giảm dưới 0.5rem
+
+                element.style.fontSize = `${newFontSize}rem`;
+            }
+        }
+    });
+    </script>
 {% endblock %}

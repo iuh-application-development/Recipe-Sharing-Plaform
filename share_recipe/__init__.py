@@ -8,7 +8,9 @@ def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
         SECRET_KEY='dev',
-        DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'),
+        DATABASE=os.path.join(app.instance_path, 'share_recipe.sqlite'),
+        UPLOAD_FOLDER=os.path.join('share_recipe', 'static', 'uploads'),
+        MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB max-limit
     )
 
     if test_config is None:
@@ -16,11 +18,17 @@ def create_app(test_config=None):
         app.config.from_pyfile('config.py', silent=True)
     else:
         # load the test config if passed in
-        app.config.from_mapping(test_config)
+        app.config.update(test_config)
 
     # ensure the instance folder exists
     try:
         os.makedirs(app.instance_path)
+    except OSError:
+        pass
+
+    # ensure the upload folder exists
+    try:
+        os.makedirs(app.config['UPLOAD_FOLDER'])
     except OSError:
         pass
 
@@ -43,3 +51,7 @@ def create_app(test_config=None):
     app.register_blueprint(admin.bp)
     
     return app
+
+if __name__ == '__main__':
+    app = create_app()
+    app.run(debug=True)
