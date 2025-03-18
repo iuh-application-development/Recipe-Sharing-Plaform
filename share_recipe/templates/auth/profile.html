@@ -3,6 +3,7 @@
 {% block head %}
 {{ super() }}
 <link rel="stylesheet" href="{{ url_for('static', filename='profile.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 {% endblock %}
 
 {% block title %}Hồ sơ người dùng{% endblock %}
@@ -10,15 +11,27 @@
 {% block content %}
 <div class="profile-container">
     <div class="profile-header">
-        <div class="profile-avatar">
-            {% if g.user.avatar_path %}
-                <img src="{{ url_for('static', filename=g.user.avatar_path) }}" alt="Avatar">
-            {% else %}
-                <img src="{{ url_for('static', filename='default-avatar.png') }}" alt="Default Avatar">
-            {% endif %}
+        <div class="avatar-upload">
+            <form action="{{ url_for('auth.update_avatar') }}" method="post" enctype="multipart/form-data" id="avatar-form">
+                <div class="avatar-edit">
+                    <input type='file' id="imageUpload" name="avatar" accept=".png, .jpg, .jpeg" />
+                    <label for="imageUpload">
+                        <i class="fas fa-pencil-alt"></i>
+                    </label>
+                </div>
+                <div class="avatar-preview">
+                    {% if g.user.avatar_path and g.user.avatar_path.strip() %}
+                        <img src="{{ url_for('static', filename=g.user.avatar_path) }}" alt="Avatar" id="imagePreview">
+                    {% else %}
+                        <img src="{{ url_for('static', filename='logo.png') }}" alt="Default Avatar" id="imagePreview">
+                    {% endif %}
+                </div>
+            </form>
         </div>
-        <h1>{{ g.user['username'] }}</h1>
-        <p class="user-role">{{ g.user['role']|title }}</p>
+        <div class="profile-info">
+            <h1>{{ g.user['username'] }}</h1>
+            <p class="user-role">{{ g.user['role']|title }}</p>
+        </div>
     </div>
 
     <div class="profile-content">
@@ -86,4 +99,19 @@
         </div>
     </div>
 </div>
+
+<script>
+document.getElementById("imageUpload").addEventListener("change", function() {
+    const file = this.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById("imagePreview").src = e.target.result;
+        }
+        reader.readAsDataURL(file);
+        // Tự động submit form khi có file được chọn
+        document.getElementById("avatar-form").submit();
+    }
+});
+</script>
 {% endblock %} 

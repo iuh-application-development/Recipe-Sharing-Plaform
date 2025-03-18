@@ -252,3 +252,60 @@ def change_password():
         flash(error, 'error')
 
     return render_template('auth/change_password.html')
+
+@bp.route('/profile/update-avatar', methods=['POST'])
+@login_required
+def update_avatar():
+    if 'avatar' not in request.files:
+        flash('Không tìm thấy file', 'error')
+        return redirect(url_for('auth.profile'))
+    
+    file = request.files['avatar']
+    if file.filename == '':
+        flash('Chưa chọn file', 'error')
+        return redirect(url_for('auth.profile'))
+    
+    if file and allowed_file(file.filename):
+        try:
+            # Xóa avatar cũ nếu có
+            if hasattr(g.user, 'avatar_path') and g.user.avatar_path:
+                old_avatar_path = os.path.join(current_app.static_folder, g.user.avatar_path)
+                if os.path.exists(old_avatar_path):
+                    try:
+                        os.remove(old_avatar_path)
+                    except OSError:
+                        pass
+            
+            # Tạo tên file unique
+            filename = secure_filename(file.filename)
+            unique_filename = f"avatar_{g.user['id']}_{secrets.token_hex(8)}_{filename}"
+            
+            # Đảm bảo thư mục uploads/avatars tồn tại
+            avatar_dir = os.path.join(current_app.static_folder, 'uploads', 'avatars')
+            os.makedirs(avatar_dir, exist_ok=True)
+            
+            # Lưu file mới
+            avatar_path = f'uploads/avatars/{unique_filename}'
+            file_path = os.path.join(current_app.static_folder, 'uploads', 'avatars', unique_filename)
+            file.save(file_path)
+            
+            # Cập nhật database
+            db = get_db()
+            db.execute(
+                'UPDATE user SET avatar_path = ? WHERE id = ?',
+                (avatar_path, g.user['id'])
+            )
+            db.commit()
+            
+            # Cập nhật session để refresh avatar ngay lập tức
+            g.user = db.execute(
+                'SELECT * FROM user WHERE id = ?', (g.user['id'],)
+            ).fetchone()
+            
+            flash('Avatar đã được cập nhật thành công!', 'success')
+        except Exception as e:
+            flash(f'Có lỗi xảy ra khi cập nhật avatar: {str(e)}', 'error')
+    else:
+        flash('File không hợp lệ. Chỉ chấp nhận các file ảnh (png, jpg, jpeg, gif)', 'error')
+    
+    return redirect(url_for('auth.profile'))

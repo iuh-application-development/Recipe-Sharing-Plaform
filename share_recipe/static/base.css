@@ -1,10 +1,18 @@
 :root {
-    --font-heading: 'Playfair Display', serif;
-    --font-body: 'Montserrat', sans-serif;
+    --font-heading: 'Playfair Display', 'Times New Roman', serif;
+    --font-body: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
     --color-primary: #28a745;
     --color-text: #333;
     --color-text-light: #666;
     --color-background: #f8f9fa;
+}
+
+html {
+    height: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    -webkit-text-size-adjust: 100%;
 }
 
 body {
@@ -12,29 +20,67 @@ body {
     margin: 0;
     background-color: var(--color-background);
     color: var(--color-text);
-    line-height: 1.6;
-    padding-top: 60px; 
+    line-height: 1.7;
+    font-size: 16px;
+    font-weight: 400;
+    padding-top: 150px; /* Increased padding to prevent overlap */
+    min-height: 100vh; /* Use viewport height */
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    text-rendering: optimizeLegibility;
+    -webkit-font-feature-settings: "kern" 1;
+    font-feature-settings: "kern" 1;
 }
 
 h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
-    font-weight: 600;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 1rem;
+    text-rendering: optimizeLegibility;
+}
+
+h1 { font-size: 2.5rem; }
+h2 { font-size: 2rem; }
+h3 { font-size: 1.75rem; }
+h4 { font-size: 1.5rem; }
+h5 { font-size: 1.25rem; }
+h6 { font-size: 1rem; }
+
+p {
+    margin-bottom: 1.5rem;
+    font-size: 1rem;
+    line-height: 1.7;
 }
 
 .navbar {
     font-family: var(--font-body);
+    background-color: white;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    padding: 10px 0;
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
+    width: 100%;
     z-index: 1000;
-    padding: 15px 0;
-    background-color: white;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    height: 80px; /* Set explicit height for header navbar */
+}
+
+.navbar.bg-success {
+    position: fixed;
+    top: 80px; /* Match the height of header navbar */
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 999;
+    padding: 10px 0;
+    height: 50px; /* Set explicit height for category navbar */
 }
 
 .navbar-spacer {
-    height: 80px;  /* Điều chỉnh theo chiều cao của navbar */
+    display: none; /* Remove spacer as we use padding-top on body */
 }
 
 .container {
@@ -69,7 +115,9 @@ h1, h2, h3, h4, h5, h6 {
     padding: 10px 40px 10px 20px;
     border: 1px solid #ddd;
     border-radius: 25px;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
 }
 
 .search-button {
@@ -137,8 +185,21 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Responsive styles */
 @media (max-width: 991px) {
+    body {
+        padding-top: 140px; /* Adjusted for mobile */
+    }
+    
+    .navbar {
+        height: 70px; /* Slightly smaller on mobile */
+    }
+    
+    .navbar.bg-success {
+        top: 70px;
+        height: 45px;
+    }
+    
     .container {
-        flex-direction: row;  /* Giữ layout ngang */
+        flex-direction: row;
         padding: 0 15px;
     }
     
@@ -146,8 +207,18 @@ h1, h2, h3, h4, h5, h6 {
         margin: 0 15px;
     }
     
-    .navbar-spacer {
-        height: 70px;  /* Điều chỉnh cho mobile */
+    .content {
+        padding: 1rem 0;
+        margin-top: 15px;
+    }
+    
+    .header-title {
+        padding: 1.5rem 0;
+        margin-top: 15px;
+    }
+    
+    .header-title h1 {
+        font-size: 2rem;
     }
 }
 
@@ -182,7 +253,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .flash-messages {
     position: fixed;
-    top: 80px;
+    top: 140px; /* Adjusted to be below both navbars */
     right: 20px;
     z-index: 1000;
     max-width: 400px;
@@ -200,10 +271,12 @@ h1, h2, h3, h4, h5, h6 {
 .btn-custom {
     font-family: var(--font-body);
     font-weight: 500;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     padding: 8px 16px;
     border-radius: 20px;
     transition: all 0.3s ease;
+    letter-spacing: 0.2px;
+    -webkit-font-smoothing: antialiased;
 }
 
 .btn-custom:hover {
@@ -211,18 +284,31 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Header styles */
+.header-title {
+    text-align: center;
+    padding: 2rem 0;
+    margin-top: 20px;
+}
+
 .header-title h1 {
     font-family: var(--font-heading);
     font-size: 2.5rem;
     font-weight: 700;
     color: var(--color-text);
+    margin-bottom: 1rem;
+    line-height: 1.3;
+    text-rendering: optimizeLegibility;
 }
 
 .header-title p {
     font-family: var(--font-body);
     font-size: 1.1rem;
     color: var(--color-text-light);
-    letter-spacing: 1px;
+    line-height: 1.7;
+    letter-spacing: 0.2px;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    margin: 0;
 }
 
 /* Thêm vào file base.css */
@@ -298,5 +384,228 @@ h1, h2, h3, h4, h5, h6 {
 
     .dropdown-menu {
         min-width: 180px;
+    }
+}
+
+/* Secondary navbar styles */
+.navbar.bg-success .nav-link {
+    padding: 0.8rem 1.2rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: background-color 0.3s;
+}
+
+.navbar.bg-success .nav-link:hover {
+    background-color: rgba(255,255,255,0.1);
+}
+
+.navbar.bg-success .navbar-nav {
+    gap: 0.5rem;
+}
+
+/* Category dropdown styles */
+.navbar.bg-success .dropdown-menu {
+    margin-top: 0;
+    border: none;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    padding: 8px;
+    min-width: 200px;
+}
+
+.navbar.bg-success .dropdown-item {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    color: var(--color-text);
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.navbar.bg-success .dropdown-item:hover {
+    background-color: var(--color-primary);
+    color: white;
+}
+
+.navbar.bg-success .dropdown-toggle::after {
+    margin-left: 8px;
+    vertical-align: middle;
+}
+
+/* Hover effect for dropdowns */
+.navbar.bg-success .nav-item.dropdown:hover .dropdown-menu {
+    display: block;
+}
+
+/* Footer Styles */
+.footer {
+    position: relative;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #212529 !important;
+    padding: 3rem 0;
+    margin-top: 0; /* Remove margin-top */
+}
+
+.footer-heading {
+    font-family: var(--font-heading);
+    font-size: 1.75rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+}
+
+.footer p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.contact-info p {
+    margin-bottom: 0.5rem;
+}
+
+.contact-info i {
+    width: 20px;
+    color: var(--color-primary);
+}
+
+.social-links {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.social-link {
+    color: #fff;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    background-color: #8B4513;
+    padding: 10px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+}
+
+.social-link:hover {
+    color: var(--color-primary);
+    transform: translateY(-3px);
+}
+
+.content {
+    flex: 1 0 auto;
+    width: 100%;
+    padding: 2rem 0;
+    margin-top: 20px;
+    margin-bottom: 0; /* Remove bottom margin */
+    min-height: calc(100vh - 150px); /* Set minimum height to fill viewport minus header height */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Avatar Upload Styles */
+.avatar-upload {
+    position: relative;
+    max-width: 200px;
+    margin: 20px auto;
+}
+
+.avatar-edit {
+    position: absolute;
+    right: 12px;
+    z-index: 1;
+    top: 10px;
+}
+
+.avatar-edit input {
+    display: none;
+}
+
+.avatar-edit label {
+    display: inline-block;
+    width: 34px;
+    height: 34px;
+    margin-bottom: 0;
+    border-radius: 100%;
+    background: #FFFFFF;
+    border: 1px solid transparent;
+    box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.12);
+    cursor: pointer;
+    font-weight: normal;
+    transition: all .2s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.avatar-edit label:hover {
+    background: #f1f1f1;
+    border-color: #d6d6d6;
+}
+
+.avatar-edit label i {
+    color: #757575;
+    font-size: 16px;
+}
+
+.avatar-preview {
+    width: 192px;
+    height: 192px;
+    position: relative;
+    border-radius: 100%;
+    border: 6px solid #F8F8F8;
+    box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1);
+}
+
+.avatar-preview > div {
+    width: 100%;
+    height: 100%;
+    border-radius: 100%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.avatar-preview img {
+    width: 100%;
+    height: 100%;
+    border-radius: 100%;
+    object-fit: cover;
+}
+
+.profile-info {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.profile-info h1 {
+    margin-bottom: 10px;
+    color: var(--color-text);
+}
+
+.profile-info .user-role {
+    color: var(--color-text-light);
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+}
+
+/* Ensure the footer sticks to bottom when content is short */
+.main-container {
+    flex: 1 0 auto;
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 150px); /* Viewport height minus header height */
+}
+
+/* Responsive adjustments */
+@media (max-width: 991px) {
+    .content {
+        min-height: calc(100vh - 140px); /* Adjust for mobile header height */
+    }
+    
+    .main-container {
+        min-height: calc(100vh - 140px);
     }
 }

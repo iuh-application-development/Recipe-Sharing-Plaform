@@ -11,7 +11,8 @@ CREATE TABLE user (
     birthdate TEXT,
     phone TEXT,
     role TEXT NOT NULL DEFAULT 'user',
-    is_blocked INTEGER NOT NULL DEFAULT 0
+    is_blocked INTEGER NOT NULL DEFAULT 0,
+    avatar_path TEXT
 );
 
 CREATE TABLE post (
