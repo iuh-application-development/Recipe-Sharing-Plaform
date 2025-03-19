@@ -29,6 +29,10 @@
                             </div>
                             <div class="recipe-info">
                                 <h3 class="recipe-title" data-title="{{ post['title'] }}">{{ post['title'] }}</h3>
+                                <div class="recipe-meta">
+                                    <p class="recipe-author">by {{ post['author_name'] }}</p>
+                                    <p class="recipe-date">{{ post['created'].strftime('%B %d, %Y') }}</p>
+                                </div>
                             </div>
                         </a>
                     </div>

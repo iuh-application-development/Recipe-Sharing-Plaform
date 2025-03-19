@@ -162,22 +162,43 @@ def delete(id):
     db.commit()
     return redirect(url_for('blog.index'))
 
-@bp.route('/<int:id>/detail', methods=('GET',))
+@bp.route('/<int:id>/detail', methods=('GET', 'POST'))
 def detail(id):
     try:
         post = get_post(id, check_author=False)
-        # Lấy ảnh của bài viết nếu có
         db = get_db()
+        
+        # Handle comment submission
+        if request.method == 'POST' and g.user:
+            content = request.form.get('content')
+            if content:
+                db.execute(
+                    'INSERT INTO comments (post_id, author_id, content) VALUES (?, ?, ?)',
+                    (id, g.user['id'], content)
+                )
+                db.commit()
+                return redirect(url_for('blog.detail', id=id))
+        
+        # Get post image
         image = db.execute(
             'SELECT image_path FROM blog_images WHERE post_id = ? AND is_main_image = 1',
             (id,)
         ).fetchone()
         
+        # Get comments for this post
+        comments = db.execute(
+            'SELECT c.*, u.username, u.avatar_path '
+            'FROM comments c JOIN user u ON c.author_id = u.id '
+            'WHERE c.post_id = ? '
+            'ORDER BY c.created DESC',
+            (id,)
+        ).fetchall()
+        
         if image:
             post = dict(post)
             post['image_path'] = image['image_path']
             
-        return render_template('blog/detail.html', post=post)
+        return render_template('blog/detail.html', post=post, comments=comments)
     except Exception as e:
         print(f"Error in detail route: {e}")  # For debugging
         abort(500)
@@ -259,3 +280,80 @@ def save_recipe_image(file, post_id):
         
         return relative_path
     return None
+
+@bp.route('/comment/<int:comment_id>/delete', methods=['POST'])
+@login_required
+def delete_comment(comment_id):
+    db = get_db()
+    # Lấy thông tin comment và kiểm tra quyền xóa
+    comment = db.execute(
+        'SELECT c.*, p.id as post_id FROM comments c '
+        'JOIN post p ON c.post_id = p.id '
+        'WHERE c.id = ?',
+        (comment_id,)
+    ).fetchone()
+
+    if comment is None:
+        abort(404, "Bình luận không tồn tại.")
+    
+    # Chỉ cho phép người viết comment xóa comment của họ
+    if comment['author_id'] != g.user['id']:
+        abort(403, "Không có quyền xóa bình luận này.")
+
+    db.execute('DELETE FROM comments WHERE id = ?', (comment_id,))
+    db.commit()
+    
+    return redirect(url_for('blog.detail', id=comment['post_id']))
+
+@bp.route('/search', methods=['GET'])
+def search():
+    query = request.args.get('q', '')
+    if not query:
+        return redirect(url_for('blog.index'))
+
+    db = get_db()
+    # Tìm kiếm theo tên món ăn (title)
+    posts = db.execute(
+        'SELECT p.id, p.title, p.description, p.created, p.author_id, '
+        'u.username, bi.image_path '
+        'FROM post p '
+        'JOIN user u ON p.author_id = u.id '
+        'LEFT JOIN blog_images bi ON p.id = bi.post_id AND bi.is_main_image = 1 '
+        'WHERE p.title LIKE ? '
+        'ORDER BY p.created DESC',
+        (f'%{query}%',)
+    ).fetchall()
+
+    posts = [dict(post) for post in posts]
+    return render_template('blog/search.html', posts=posts, query=query)
+
+@bp.route('/comment/<int:comment_id>/edit', methods=['POST'])
+@login_required
+def edit_comment(comment_id):
+    content = request.form.get('content')
+    if not content:
+        abort(400, "Nội dung bình luận không được để trống")
+
+    db = get_db()
+    # Lấy thông tin comment và kiểm tra quyền chỉnh sửa
+    comment = db.execute(
+        'SELECT c.*, p.id as post_id FROM comments c '
+        'JOIN post p ON c.post_id = p.id '
+        'WHERE c.id = ?',
+        (comment_id,)
+    ).fetchone()
+
+    if comment is None:
+        abort(404, "Bình luận không tồn tại.")
+    
+    # Chỉ cho phép người viết comment chỉnh sửa comment của họ
+    if comment['author_id'] != g.user['id']:
+        abort(403, "Không có quyền chỉnh sửa bình luận này.")
+
+    db.execute(
+        'UPDATE comments SET content = ? WHERE id = ?',
+        (content, comment_id)
+    )
+    db.commit()
+    
+    return redirect(url_for('blog.detail', id=comment['post_id']))
