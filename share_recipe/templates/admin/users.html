@@ -1,38 +1,81 @@
-{% extends 'base.html' %}
+{% extends 'admin/base_admin.html' %}
 
-{% block title %}Admin Dashboard{% endblock %}
+{% block admin_title %}Quản lý người dùng{% endblock %}
 
-{% block content %}
-    <head>
-        <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
-    </head>
-    <div class="admin-container">
-        <aside class="sidebar">
-            <div class="avatar">
-                <img src="{{ url_for('static', filename='avatar.png') }}" alt="Admin Avatar">
-            </div>
-            <div class="admin-name">Administrator</div>
-            <nav class="menu">
-                <a href="#">User management</a>
-                <a href="#">Post management</a>
-                <a href="#">Statistics</a>
-            </nav>
-        </aside>
-        <main class="content">
-            <section class="recipes">
-                <div class="recipe">
-                    <img src="{{ url_for('static', filename='recipe1.jpg') }}" alt="Recipe 1">
-                    <div class="recipe-title">Cooking with Tomatoes</div>
-                </div>
-                <div class="recipe">
-                    <img src="{{ url_for('static', filename='recipe2.jpg') }}" alt="Recipe 2">
-                    <div class="recipe-title">Cooking with Tomatoes</div>
-                </div>
-                <div class="recipe">
-                    <img src="{{ url_for('static', filename='recipe3.jpg') }}" alt="Recipe 3">
-                    <div class="recipe-title">Cooking with Tomatoes</div>
-                </div>
-            </section>
-        </main>
+{% block admin_content %}
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="card-title mb-0">Danh sách người dùng</h5>
+        <a href="{{ url_for('admin.create_user') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Thêm người dùng
+        </a>
     </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Email</th>
+                        <th>Username</th>
+                        <th>Role</th>
+                        <th>Trạng thái</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>{{ user['id'] }}</td>
+                        <td>{{ user['email'] }}</td>
+                        <td>{{ user['username'] }}</td>
+                        <td>
+                            <span class="badge {% if user['role'] == 'admin' %}bg-danger{% else %}bg-primary{% endif %}">
+                                {{ user['role'] }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if user['is_blocked'] %}
+                            <span class="badge bg-danger">Bị khóa</span>
+                            {% else %}
+                            <span class="badge bg-success">Hoạt động</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group">
+                                <a href="{{ url_for('admin.update_user', id=user['id']) }}" class="btn btn-warning btn-sm" title="Sửa">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                {% if user['is_blocked'] %}
+                                <form action="{{ url_for('admin.unblock_user', id=user['id']) }}" method="post" style="display: inline;">
+                                    <button type="submit" class="btn btn-success btn-sm" title="Mở khóa">
+                                        <i class="fas fa-unlock"></i>
+                                    </button>
+                                </form>
+                                {% else %}
+                                <form action="{{ url_for('admin.block_user', id=user['id']) }}" method="post" style="display: inline;">
+                                    <button type="submit" class="btn btn-danger btn-sm" title="Khóa">
+                                        <i class="fas fa-lock"></i>
+                                    </button>
+                                </form>
+                                {% endif %}
+                                <form action="{{ url_for('admin.reset_password', id=user['id']) }}" method="post" style="display: inline;">
+                                    <button type="submit" class="btn btn-info btn-sm" title="Đặt lại mật khẩu">
+                                        <i class="fas fa-key"></i>
+                                    </button>
+                                </form>
+                                <form action="{{ url_for('admin.delete_user', id=user['id']) }}" method="post" style="display: inline;">
+                                    <button type="submit" class="btn btn-danger btn-sm" title="Xóa" onclick="return confirm('Bạn có chắc chắn muốn xóa người dùng này?')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 {% endblock %}

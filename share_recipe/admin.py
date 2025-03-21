@@ -39,24 +39,27 @@ def create_user():
         email = request.form['email']
         password = request.form['password']
         role = request.form['role']
+        username = request.form['username']
 
         db = get_db()
         error = None
 
         if not email:
-            error = 'email is required.'
+            error = 'Email là bắt buộc.'
         elif not password:
-            error = 'Password is required.'
+            error = 'Mật khẩu là bắt buộc.'
+        elif not username:
+            error = 'Tên người dùng là bắt buộc.'
 
         if error is None:
             try:
                 db.execute(
-                    "INSERT INTO user (email, password, role) VALUES (?, ?, ?)",
-                    (email, generate_password_hash(password), role),
+                    "INSERT INTO user (email, password, username, role) VALUES (?, ?, ?, ?)",
+                    (email, generate_password_hash(password), username, role),
                 )
                 db.commit()
             except db.IntegrityError:
-                error = f"User {email} is already registered."
+                error = f"Email {email} đã được đăng ký."
             else:
                 return redirect(url_for("admin.users"))
 
@@ -131,28 +134,24 @@ def update_user(id):
         abort(404)
 
     if request.method == 'POST':
-        email = request.form['email']
+        username = request.form['username']
         role = request.form['role']
-        # ... (lấy các dữ liệu khác từ form)
-
-        db = get_db()
         error = None
 
-        if not email:
-            error = 'email is required.'
-        # ... (kiểm tra các trường dữ liệu khác)
+        if not username:
+            error = 'Tên người dùng là bắt buộc.'
 
         if error is None:
             try:
+                db = get_db()
                 db.execute(
-                    'UPDATE user SET email = ?, role = ? WHERE id = ?',
-                    (email, role, id)  # Cập nhật các trường dữ liệu khác
+                    'UPDATE user SET username = ?, role = ? WHERE id = ?',
+                    (username, role, id)
                 )
                 db.commit()
-            except db.IntegrityError:
-                error = f"User {email} is already registered."
-            else:
                 return redirect(url_for('admin.users'))
+            except db.IntegrityError:
+                error = f"Lỗi khi cập nhật người dùng."
 
         flash(error)
 
@@ -177,3 +176,76 @@ def delete_user(id):
         flash(f"Lỗi khi xóa người dùng.")
         db.rollback()
     return redirect(url_for('admin.users'))
+
+@bp.route('/')
+@login_required
+def dashboard():
+    if g.user['role'] != 'admin':
+        return redirect(url_for('index'))
+    
+    db = get_db()
+    total_users = db.execute('SELECT COUNT(*) as count FROM user').fetchone()['count']
+    total_posts = db.execute('SELECT COUNT(*) as count FROM post').fetchone()['count']
+    recent_posts = db.execute('''
+        SELECT p.*, u.email as author_email 
+        FROM post p 
+        JOIN user u ON p.author_id = u.id 
+        ORDER BY p.created DESC 
+        LIMIT 5
+    ''').fetchall()
+    
+    return render_template('admin/dashboard.html', 
+                         total_users=total_users,
+                         total_posts=total_posts,
+                         recent_posts=recent_posts)
+
+@bp.route('/posts')
+@login_required
+def posts():
+    if g.user['role'] != 'admin':
+        return redirect(url_for('index'))
+    
+    db = get_db()
+    posts = db.execute('''
+        SELECT p.*, u.email as author_email 
+        FROM post p 
+        JOIN user u ON p.author_id = u.id 
+        ORDER BY p.created DESC
+    ''').fetchall()
+    
+    return render_template('admin/posts.html', posts=posts)
+
+@bp.route('/posts/<int:id>/delete', methods=['POST'])
+@login_required
+def delete_post(id):
+    if g.user['role'] != 'admin':
+        return redirect(url_for('index'))
+    
+    db = get_db()
+    post = db.execute('SELECT * FROM post WHERE id = ?', (id,)).fetchone()
+    if not post:
+        abort(404)
+    
+    try:
+        db.execute('DELETE FROM post WHERE id = ?', (id,))
+        db.commit()
+    except Exception as e:
+        logging.error(f"Lỗi khi xóa bài viết (ID: {id}): {e}")
+        flash(f"Lỗi khi xóa bài viết.")
+        db.rollback()
+    
+    return redirect(url_for('admin.posts'))
+
+def create_default_admin():
+    db = get_db()
+    admin = db.execute('SELECT * FROM user WHERE role = ?', ('admin',)).fetchone()
+    if not admin:
+        db.execute(
+            "INSERT INTO user (email, password, username, role) VALUES (?, ?, ?, ?)",
+            ('admin@example.com', generate_password_hash('admin123'), 'admin', 'admin'),
+        )
+        db.commit()
+        print('Tài khoản admin mặc định đã được tạo:')
+        print('Email: admin@example.com')
+        print('Username: admin')
+        print('Password: admin123')

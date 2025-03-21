@@ -50,6 +50,10 @@ def create_app(test_config=None):
     from . import admin
     app.register_blueprint(admin.bp)
     
+    # Tạo tài khoản admin mặc định
+    with app.app_context():
+        admin.create_default_admin()
+    
     return app
 
 if __name__ == '__main__':
