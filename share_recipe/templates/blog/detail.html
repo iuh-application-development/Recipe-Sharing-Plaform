@@ -316,7 +316,7 @@ function cancelEdit(commentId) {
             <form action="{{ url_for('blog.toggle_favorite', id=post['id']) }}" method="post" class="favorite-form">
                 <button type="submit" class="btn {% if is_favorite %}btn-danger{% else %}btn-outline-danger{% endif %}" id="favoriteBtn">
                     <i class="fas fa-heart"></i> 
-                    <span id="favoriteText">{% if is_favorite %}Đã yêu thích{% else %}Yêu thích{% endif %}</span>
+                    <span id="favoriteText">{% if is_favorite %}Đã thích{% else %}Thích{% endif %}</span>
                 </button>
             </form>
         {% endif %}
@@ -406,11 +406,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (data.is_favorite) {
                     btn.classList.remove('btn-outline-danger');
                     btn.classList.add('btn-danger');
-                    text.textContent = 'Đã yêu thích';
+                    text.textContent = 'Đã thích';
                 } else {
                     btn.classList.remove('btn-danger');
                     btn.classList.add('btn-outline-danger');
-                    text.textContent = 'Yêu thích';
+                    text.textContent = 'Thích';
                 }
             }
         })

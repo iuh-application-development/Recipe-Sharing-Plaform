@@ -35,13 +35,13 @@
         </div>
 
         <div class="form-row">
-            <div class="form-section half">
-                <label for="cooking_time" class="form-label">Thời gian nấu (phút)</label>
-                <input type="number" class="form-control" name="cooking_time" id="cooking_time">
+            <div class="form-group mb-3">
+                <label for="cooking_time">Thời gian nấu (phút)</label>
+                <input type="number" class="form-control" id="cooking_time" name="cooking_time" min="1" required>
             </div>
-            <div class="form-section half">
-                <label for="servings" class="form-label">Số người ăn</label>
-                <input type="number" class="form-control" name="servings" id="servings">
+            <div class="form-group mb-3">
+                <label for="servings">Số người ăn</label>
+                <input type="number" class="form-control" id="servings" name="servings" min="1" required>
             </div>
         </div>
 
