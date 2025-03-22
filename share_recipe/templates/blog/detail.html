@@ -4,12 +4,106 @@
 {{ super() }}
 <link rel="stylesheet" href="{{ url_for('static', filename='detail.css') }}">
 <style>
-    .comments-section {
-        margin-top: 2rem;
+    .recipe-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+
+    .recipe-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .recipe-title {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        color: #2c3e50;
+    }
+
+    .recipe-meta {
+        color: #666;
+        margin-bottom: 1rem;
+    }
+
+    .recipe-meta span {
+        margin: 0 1rem;
+    }
+
+    .recipe-image {
+        width: 100%;
+        max-height: 400px;
+        object-fit: cover;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .recipe-content {
+        background: white;
         padding: 2rem;
-        background-color: #fff;
         border-radius: 8px;
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .recipe-section {
+        margin-bottom: 2rem;
+    }
+
+    .recipe-section h2 {
+        color: #2c3e50;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #e9ecef;
+    }
+
+    .recipe-info {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .info-card {
+        background: #f8f9fa;
+        padding: 1rem;
+        border-radius: 8px;
+        text-align: center;
+    }
+
+    .info-card i {
+        font-size: 1.5rem;
+        color: #16a34a;
+        margin-bottom: 0.5rem;
+    }
+
+    .favorite-btn {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        z-index: 10;
+    }
+
+    .comments-section {
+        margin-top: 2rem;
+        background: white;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .comment-form textarea {
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+    }
+
+    .comment-item {
+        padding: 1rem;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .comment-item:last-child {
+        border-bottom: none;
     }
 
     .comments-header {
@@ -48,12 +142,6 @@
     .comment-list {
         list-style: none;
         padding: 0;
-    }
-
-    .comment-item {
-        padding: 1rem;
-        border-bottom: 1px solid #eee;
-        margin-bottom: 1rem;
     }
 
     .comment-header {
@@ -217,153 +305,118 @@ function cancelEdit(commentId) {
 {% block title %}{{ post['title'] }}{% endblock %}
 
 {% block content %}
-<div class="recipe-detail-container">
+<div class="recipe-container">
     <div class="recipe-header">
         <h1 class="recipe-title">{{ post['title'] }}</h1>
         <div class="recipe-meta">
-            <span class="author">
-                <i class="fas fa-user"></i> {{ post['username'] }}
-            </span>
-            <span class="date">
-                <i class="fas fa-calendar"></i> {{ post['created'].strftime('%d-%m-%Y') }}
-            </span>
+            <span><i class="fas fa-user"></i> {{ post['username'] }}</span>
+            <span><i class="fas fa-calendar"></i> {{ post['created'].strftime('%d/%m/%Y') }}</span>
         </div>
+        {% if g.user %}
+            <form action="{{ url_for('blog.toggle_favorite', id=post['id']) }}" method="post" class="favorite-form">
+                <button type="submit" class="btn {% if is_favorite %}btn-danger{% else %}btn-outline-danger{% endif %}" id="favoriteBtn">
+                    <i class="fas fa-heart"></i> 
+                    <span id="favoriteText">{% if is_favorite %}Đã yêu thích{% else %}Yêu thích{% endif %}</span>
+                </button>
+            </form>
+        {% endif %}
     </div>
 
-    <div class="recipe-content">
-        <div class="recipe-image">
-            {% if post.get('image_path') %}
-                <img src="{{ url_for('static', filename=post.image_path) }}" alt="{{ post['title'] }}">
-            {% else %}
-                <img src="{{ url_for('static', filename='default-recipe.jpg') }}" alt="{{ post['title'] }}">
-            {% endif %}
-        </div>
+    {% if post['image_path'] %}
+        <img src="{{ url_for('static', filename=post['image_path']) }}" class="recipe-image" alt="{{ post['title'] }}">
+    {% endif %}
 
-        <div class="recipe-info-grid">
-            <div class="info-card cooking-time">
+    <div class="recipe-content">
+        <div class="recipe-info">
+            <div class="info-card">
                 <i class="fas fa-clock"></i>
                 <h3>Thời gian nấu</h3>
-                <p>{{ post['cooking_time']|default(0) }} phút</p>
+                <p>{{ post['cooking_time'] }} phút</p>
             </div>
-            <div class="info-card servings">
+            <div class="info-card">
                 <i class="fas fa-users"></i>
                 <h3>Khẩu phần</h3>
-                <p>{{ post['servings']|default(1) }} người</p>
+                <p>{{ post['servings'] }} người</p>
             </div>
         </div>
 
-        {% if post.get('description') %}
-        <div class="recipe-section description">
+        <div class="recipe-section">
             <h2>Mô tả</h2>
             <p>{{ post['description'] }}</p>
         </div>
-        {% endif %}
 
-        <div class="recipe-section ingredients">
+        <div class="recipe-section">
             <h2>Nguyên liệu</h2>
-            <ul class="ingredients-list">
-                {% for ingredient in post['ingredients'].split('\n') if ingredient.strip() %}
-                    <li>
-                        <i class="fas fa-check"></i>
-                        <span>{{ ingredient }}</span>
-                    </li>
-                {% endfor %}
-            </ul>
+            <p>{{ post['ingredients'] }}</p>
         </div>
 
-        <div class="recipe-section instructions">
+        <div class="recipe-section">
             <h2>Cách làm</h2>
-            <div class="instructions-list">
-                {% for step in post['instructions'].split('\n') if step.strip() %}
-                    <div class="instruction-step">
-                        <div class="step-number">{{ loop.index }}</div>
-                        <p>{{ step }}</p>
-                    </div>
-                {% endfor %}
-            </div>
+            <p>{{ post['instructions'] }}</p>
         </div>
     </div>
-
-    {% if g.user and g.user['id'] == post['author_id'] %}
-        <div class="recipe-actions">
-            <a href="{{ url_for('blog.update', id=post['id']) }}" class="btn btn-edit">
-                <i class="fas fa-edit"></i> Chỉnh sửa
-            </a>
-            <form action="{{ url_for('blog.delete', id=post['id']) }}" method="post" class="delete-form">
-                <button class="btn btn-delete" onclick="return confirm('Bạn có chắc chắn muốn xóa?');">
-                    <i class="fas fa-trash"></i> Xóa
-                </button>
-            </form>
-        </div>
-    {% endif %}
 
     <div class="comments-section">
-        <div class="comments-header">
-            <h2><i class="fas fa-comments"></i> Bình luận</h2>
-        </div>
-
+        <h2>Bình luận</h2>
         {% if g.user %}
-            <div class="comment-form">
-                <form method="post">
-                    <textarea name="content" placeholder="Viết bình luận của bạn..." required></textarea>
-                    <button type="submit">Gửi bình luận</button>
-                </form>
-            </div>
-        {% else %}
-            <p>Vui lòng <a href="{{ url_for('auth.login') }}">đăng nhập</a> để bình luận.</p>
+            <form method="post" class="comment-form mb-4">
+                <div class="form-group">
+                    <textarea name="content" class="form-control" rows="3" required placeholder="Viết bình luận của bạn..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary mt-2">Gửi bình luận</button>
+            </form>
         {% endif %}
 
-        <div class="comment-list">
-            {% if comments %}
-                {% for comment in comments %}
-                    <div class="comment-item">
-                        <div class="comment-header">
-                            <div class="comment-header-left">
-                                {% if comment.avatar_path %}
-                                    <img src="{{ url_for('static', filename=comment.avatar_path) }}" alt="{{ comment.username }}" class="comment-avatar">
-                                {% else %}
-                                    <img src="{{ url_for('static', filename='default-avatar.png') }}" alt="{{ comment.username }}" class="comment-avatar">
-                                {% endif %}
-                                <div class="comment-meta">
-                                    <div class="comment-author">{{ comment.username }}</div>
-                                    <div class="comment-date">{{ comment.created.strftime('%d-%m-%Y %H:%M') }}</div>
-                                </div>
-                            </div>
-                            {% if g.user %}
-                                <div class="comment-actions">
-                                    {% if g.user['id'] == comment.author_id %}
-                                        <button class="btn-edit-comment" onclick="toggleEditForm({{ comment.id }})">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <form action="{{ url_for('blog.delete_comment', comment_id=comment.id) }}" method="post" class="delete-comment-form">
-                                            <button type="submit" class="btn-delete-comment" onclick="return confirm('Bạn có chắc chắn muốn xóa bình luận này?');">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </form>
-                                    {% endif %}
-                                </div>
-                            {% endif %}
-                        </div>
-                        <div id="comment-view-{{ comment.id }}">
-                            <div class="comment-content" id="comment-content-{{ comment.id }}">
-                                {{ comment.content }}
-                            </div>
-                        </div>
-                        <div id="comment-edit-{{ comment.id }}" class="comment-edit-form">
-                            <form action="{{ url_for('blog.edit_comment', comment_id=comment.id) }}" method="post">
-                                <textarea name="content" id="edit-content-{{ comment.id }}" required>{{ comment.content }}</textarea>
-                                <div class="edit-actions">
-                                    <button type="submit" class="btn-save">Lưu</button>
-                                    <button type="button" class="btn-cancel" onclick="cancelEdit({{ comment.id }})">Hủy</button>
-                                </div>
-                            </form>
-                        </div>
+        {% for comment in comments %}
+            <div class="comment-item">
+                <div class="d-flex align-items-start">
+                    {% if comment.avatar_path %}
+                        <img src="{{ url_for('static', filename=comment.avatar_path) }}" class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                    {% endif %}
+                    <div class="flex-grow-1">
+                        <h5 class="mb-1">{{ comment.username }}</h5>
+                        <p class="mb-1">{{ comment.content }}</p>
+                        <small class="text-muted">{{ comment.created.strftime('%d/%m/%Y %H:%M') }}</small>
                     </div>
-                {% endfor %}
-            {% else %}
-                <p>Chưa có bình luận nào. Hãy là người đầu tiên bình luận!</p>
-            {% endif %}
-        </div>
+                </div>
+            </div>
+        {% endfor %}
     </div>
 </div>
+
+{% if g.user %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('.favorite-form');
+    const btn = document.getElementById('favoriteBtn');
+    const text = document.getElementById('favoriteText');
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        fetch(form.action, {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                if (data.is_favorite) {
+                    btn.classList.remove('btn-outline-danger');
+                    btn.classList.add('btn-danger');
+                    text.textContent = 'Đã yêu thích';
+                } else {
+                    btn.classList.remove('btn-danger');
+                    btn.classList.add('btn-outline-danger');
+                    text.textContent = 'Yêu thích';
+                }
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
+});
+</script>
+{% endif %}
 {% endblock %}

@@ -1,5 +1,5 @@
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, url_for
+    Blueprint, flash, g, redirect, render_template, request, url_for, jsonify
 )
 from werkzeug.exceptions import abort
 import os
@@ -166,6 +166,12 @@ def delete(id):
 def detail(id):
     try:
         post = get_post(id, check_author=False)
+        if post is None:
+            abort(404)
+            
+        # Convert post to dictionary
+        post = dict(post)
+        
         db = get_db()
         
         # Handle comment submission
@@ -194,11 +200,22 @@ def detail(id):
             (id,)
         ).fetchall()
         
+        # Check if current user has favorited this post
+        is_favorite = False
+        if g.user:
+            favorite = db.execute(
+                'SELECT * FROM favorites WHERE user_id = ? AND post_id = ?',
+                (g.user['id'], id)
+            ).fetchone()
+            is_favorite = favorite is not None
+        
         if image:
-            post = dict(post)
             post['image_path'] = image['image_path']
             
-        return render_template('blog/detail.html', post=post, comments=comments)
+        return render_template('blog/detail.html', 
+                             post=post, 
+                             comments=comments,
+                             is_favorite=is_favorite)
     except Exception as e:
         print(f"Error in detail route: {e}")  # For debugging
         abort(500)
@@ -357,3 +374,87 @@ def edit_comment(comment_id):
     db.commit()
     
     return redirect(url_for('blog.detail', id=comment['post_id']))
+
+@bp.route('/<int:id>/favorite', methods=['POST'])
+@login_required
+def toggle_favorite(id):
+    try:
+        db = get_db()
+        post = get_post(id, check_author=False)
+        if post is None:
+            abort(404)
+        
+        # Kiểm tra xem bài viết đã được yêu thích chưa
+        favorite = db.execute(
+            'SELECT * FROM favorites WHERE user_id = ? AND post_id = ?',
+            (g.user['id'], id)
+        ).fetchone()
+        
+        if favorite:
+            # Nếu đã yêu thích thì xóa
+            db.execute(
+                'DELETE FROM favorites WHERE user_id = ? AND post_id = ?',
+                (g.user['id'], id)
+            )
+            is_favorite = False
+        else:
+            # Nếu chưa yêu thích thì thêm mới
+            db.execute(
+                'INSERT INTO favorites (user_id, post_id) VALUES (?, ?)',
+                (g.user['id'], id)
+            )
+            is_favorite = True
+        
+        db.commit()
+        
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return jsonify({
+                'success': True,
+                'is_favorite': is_favorite
+            })
+        
+        return redirect(url_for('blog.detail', id=id))
+        
+    except Exception as e:
+        print(f"Error in toggle_favorite: {e}")
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return jsonify({
+                'success': False,
+                'error': str(e)
+            }), 500
+        abort(500)
+
+@bp.route('/favorites')
+@login_required
+def favorites():
+    db = get_db()
+    page = request.args.get('page', 1, type=int)
+    per_page = 9
+    offset = (page - 1) * per_page
+    
+    # Lấy danh sách bài viết yêu thích
+    favorites = db.execute(
+        'SELECT p.id, p.title, p.created, p.author_id, '
+        'u.username, bi.image_path '
+        'FROM favorites f '
+        'JOIN post p ON f.post_id = p.id '
+        'JOIN user u ON p.author_id = u.id '
+        'LEFT JOIN blog_images bi ON p.id = bi.post_id AND bi.is_main_image = 1 '
+        'WHERE f.user_id = ? '
+        'ORDER BY f.created_at DESC '
+        'LIMIT ? OFFSET ?',
+        (g.user['id'], per_page, offset)
+    ).fetchall()
+    
+    # Đếm tổng số bài viết yêu thích
+    total_favorites = db.execute(
+        'SELECT COUNT(*) FROM favorites WHERE user_id = ?',
+        (g.user['id'],)
+    ).fetchone()[0]
+    
+    total_pages = (total_favorites + per_page - 1) // per_page
+    
+    return render_template('blog/favorites.html',
+                         favorites=favorites,
+                         page=page,
+                         total_pages=total_pages)
