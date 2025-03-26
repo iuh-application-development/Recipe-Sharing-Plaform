@@ -40,6 +40,13 @@ def create_app(test_config=None):
     from . import db
     db.init_app(app)
     
+    # Khởi tạo database và tạo admin mặc định chỉ khi database chưa tồn tại
+    with app.app_context():
+        if not os.path.exists(app.config['DATABASE']):
+            db.init_db()
+            from . import admin
+            admin.create_default_admin()
+    
     from . import auth
     app.register_blueprint(auth.bp)
     
@@ -49,10 +56,6 @@ def create_app(test_config=None):
 
     from . import admin
     app.register_blueprint(admin.bp)
-    
-    # Tạo tài khoản admin mặc định
-    with app.app_context():
-        admin.create_default_admin()
     
     return app
 

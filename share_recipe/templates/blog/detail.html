@@ -274,6 +274,67 @@
     .btn-cancel:hover {
         background-color: #5a6268;
     }
+
+    .comment-reactions {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 0.5rem;
+        margin-left: 3.5rem;
+    }
+
+    .reaction-btn {
+        background: none;
+        border: none;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        cursor: pointer;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        transition: background-color 0.2s;
+    }
+
+    .reaction-btn:hover {
+        background-color: #f0f0f0;
+    }
+
+    .reaction-btn.active {
+        color: #007bff;
+    }
+
+    .reaction-btn.active.dislike {
+        color: #dc3545;
+    }
+
+    .reaction-count {
+        font-size: 0.875rem;
+        color: #666;
+    }
+
+    .reaction-stats {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .reaction-stat {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        color: #666;
+    }
+
+    .login-to-react {
+        margin-left: 1rem;
+        color: #007bff;
+        text-decoration: none;
+        font-size: 0.875rem;
+    }
+
+    .login-to-react:hover {
+        text-decoration: underline;
+    }
 </style>
 
 <script>
@@ -298,6 +359,54 @@ function cancelEdit(commentId) {
     
     viewMode.style.display = 'block';
     editForm.classList.remove('active');
+}
+
+function handleReaction(commentId, reactionType) {
+    const form = new FormData();
+    form.append('reaction_type', reactionType);
+
+    fetch(`/comment/${commentId}/react`, {
+        method: 'POST',
+        body: form,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const likeBtn = document.getElementById(`like-btn-${commentId}`);
+            const dislikeBtn = document.getElementById(`dislike-btn-${commentId}`);
+            const likeCount = document.getElementById(`like-count-${commentId}`);
+            const dislikeCount = document.getElementById(`dislike-count-${commentId}`);
+
+            likeCount.textContent = data.likes;
+            dislikeCount.textContent = data.dislikes;
+
+            if (data.action === 'removed') {
+                if (reactionType === 'like') {
+                    likeBtn.classList.remove('active');
+                } else {
+                    dislikeBtn.classList.remove('active');
+                }
+            } else if (data.action === 'changed') {
+                if (reactionType === 'like') {
+                    likeBtn.classList.add('active');
+                    dislikeBtn.classList.remove('active');
+                } else {
+                    dislikeBtn.classList.add('active');
+                    likeBtn.classList.remove('active');
+                }
+            } else {
+                if (reactionType === 'like') {
+                    likeBtn.classList.add('active');
+                } else {
+                    dislikeBtn.classList.add('active');
+                }
+            }
+        }
+    })
+    .catch(error => console.error('Error:', error));
 }
 </script>
 {% endblock %}
@@ -369,16 +478,74 @@ function cancelEdit(commentId) {
 
         {% for comment in comments %}
             <div class="comment-item">
-                <div class="d-flex align-items-start">
-                    {% if comment.avatar_path %}
-                        <img src="{{ url_for('static', filename=comment.avatar_path) }}" class="rounded-circle me-3" width="40" height="40" alt="Avatar">
-                    {% endif %}
-                    <div class="flex-grow-1">
-                        <h5 class="mb-1">{{ comment.username }}</h5>
-                        <p class="mb-1">{{ comment.content }}</p>
-                        <small class="text-muted">{{ comment.created.strftime('%d/%m/%Y %H:%M') }}</small>
+                <div id="comment-view-{{ comment.id }}">
+                    <div class="comment-header">
+                        <div class="comment-header-left">
+                            {% if comment.avatar_path %}
+                                <img src="{{ url_for('static', filename=comment.avatar_path) }}" class="comment-avatar" alt="Avatar">
+                            {% endif %}
+                            <div class="comment-meta">
+                                <div class="comment-author">{{ comment.username }}</div>
+                                <div class="comment-date">{{ comment.created.strftime('%d/%m/%Y %H:%M') }}</div>
+                            </div>
+                        </div>
+                        {% if g.user and comment.author_id == g.user.id %}
+                            <div class="comment-actions">
+                                <button type="button" class="btn-edit-comment" onclick="toggleEditForm({{ comment.id }})">
+                                    <i class="fas fa-edit"></i> Sửa
+                                </button>
+                                <form action="{{ url_for('blog.delete_comment', comment_id=comment.id) }}" method="post" class="delete-comment-form" onsubmit="return confirm('Bạn có chắc chắn muốn xóa bình luận này?');">
+                                    <button type="submit" class="btn-delete-comment">
+                                        <i class="fas fa-trash"></i> Xóa
+                                    </button>
+                                </form>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="comment-content" id="comment-content-{{ comment.id }}">{{ comment.content }}</div>
+                    <div class="comment-reactions">
+                        {% if g.user %}
+                        <button type="button" 
+                                id="like-btn-{{ comment.id }}"
+                                class="reaction-btn {% if comment.user_reaction == 'like' %}active{% endif %}"
+                                onclick="handleReaction({{ comment.id }}, 'like')">
+                            <i class="fas fa-thumbs-up"></i>
+                            <span id="like-count-{{ comment.id }}" class="reaction-count">{{ comment.likes_count }}</span>
+                        </button>
+                        <button type="button"
+                                id="dislike-btn-{{ comment.id }}"
+                                class="reaction-btn {% if comment.user_reaction == 'dislike' %}active{% endif %} dislike"
+                                onclick="handleReaction({{ comment.id }}, 'dislike')">
+                            <i class="fas fa-thumbs-down"></i>
+                            <span id="dislike-count-{{ comment.id }}" class="reaction-count">{{ comment.dislikes_count }}</span>
+                        </button>
+                        {% else %}
+                        <div class="reaction-stats">
+                            <span class="reaction-stat">
+                                <i class="fas fa-thumbs-up"></i>
+                                <span class="reaction-count">{{ comment.likes_count }}</span>
+                            </span>
+                            <span class="reaction-stat">
+                                <i class="fas fa-thumbs-down"></i>
+                                <span class="reaction-count">{{ comment.dislikes_count }}</span>
+                            </span>
+                        </div>
+                        <a href="{{ url_for('auth.login') }}" class="login-to-react">Đăng nhập để thích/không thích</a>
+                        {% endif %}
                     </div>
                 </div>
+
+                {% if g.user and comment.author_id == g.user.id %}
+                    <div id="comment-edit-{{ comment.id }}" class="comment-edit-form">
+                        <form action="{{ url_for('blog.edit_comment', comment_id=comment.id) }}" method="post">
+                            <textarea name="content" id="edit-content-{{ comment.id }}" required>{{ comment.content }}</textarea>
+                            <div class="edit-actions">
+                                <button type="submit" class="btn-save">Lưu</button>
+                                <button type="button" class="btn-cancel" onclick="cancelEdit({{ comment.id }})">Hủy</button>
+                            </div>
+                        </form>
+                    </div>
+                {% endif %}
             </div>
         {% endfor %}
     </div>

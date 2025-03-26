@@ -3,6 +3,7 @@ DROP TABLE IF EXISTS post;
 DROP TABLE IF EXISTS blog_images;
 DROP TABLE IF EXISTS comments;
 DROP TABLE IF EXISTS favorites;
+DROP TABLE IF EXISTS comment_reactions;
 
 CREATE TABLE user (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -57,4 +58,14 @@ CREATE TABLE favorites (
     FOREIGN KEY (user_id) REFERENCES user (id) ON DELETE CASCADE,
     FOREIGN KEY (post_id) REFERENCES post (id) ON DELETE CASCADE,
     UNIQUE(user_id, post_id)
+);
+
+CREATE TABLE comment_reactions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    comment_id INTEGER NOT NULL,
+    user_id TEXT NOT NULL,
+    reaction_type TEXT NOT NULL CHECK(reaction_type IN ('like', 'dislike')),
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (comment_id) REFERENCES comments (id) ON DELETE CASCADE,
+    UNIQUE(comment_id, user_id)
 );

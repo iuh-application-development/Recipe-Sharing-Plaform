@@ -191,14 +191,37 @@ def detail(id):
             (id,)
         ).fetchone()
         
-        # Get comments for this post
-        comments = db.execute(
-            'SELECT c.*, u.username, u.avatar_path '
-            'FROM comments c JOIN user u ON c.author_id = u.id '
-            'WHERE c.post_id = ? '
-            'ORDER BY c.created DESC',
-            (id,)
-        ).fetchall()
+        # Get comments with reaction counts and user's reactions
+        comments_query = '''
+            SELECT c.*, u.username, u.avatar_path,
+                (SELECT COUNT(DISTINCT user_id) FROM comment_reactions cr 
+                 WHERE cr.comment_id = c.id AND cr.reaction_type = 'like') as likes_count,
+                (SELECT COUNT(DISTINCT user_id) FROM comment_reactions cr 
+                 WHERE cr.comment_id = c.id AND cr.reaction_type = 'dislike') as dislikes_count
+        '''
+        
+        # Get current user's reaction if logged in
+        if g.user:
+            comments_query += ''',
+                (SELECT reaction_type FROM comment_reactions cr 
+                 WHERE cr.comment_id = c.id AND cr.user_id = ?) as user_reaction
+            '''
+        else:
+            comments_query += ', NULL as user_reaction'
+        
+        comments_query += '''
+            FROM comments c JOIN user u ON c.author_id = u.id
+            WHERE c.post_id = ?
+            ORDER BY c.created DESC
+        '''
+        
+        if g.user:
+            comments = db.execute(comments_query, (g.user['id'], id)).fetchall()
+        else:
+            comments = db.execute(comments_query, (id,)).fetchall()
+        
+        # Convert comments to list of dictionaries
+        comments = [dict(comment) for comment in comments]
         
         # Check if current user has favorited this post
         is_favorite = False
@@ -374,6 +397,76 @@ def edit_comment(comment_id):
     db.commit()
     
     return redirect(url_for('blog.detail', id=comment['post_id']))
+
+@bp.route('/comment/<int:comment_id>/react', methods=['POST'])
+@login_required
+def react_to_comment(comment_id):
+    reaction_type = request.form.get('reaction_type')
+    if reaction_type not in ['like', 'dislike']:
+        return jsonify({'success': False, 'error': 'Invalid reaction type'}), 400
+
+    db = get_db()
+    try:
+        # Check if comment exists
+        comment = db.execute(
+            'SELECT * FROM comments WHERE id = ?', (comment_id,)
+        ).fetchone()
+        
+        if comment is None:
+            return jsonify({'success': False, 'error': 'Comment not found'}), 404
+
+        # Check if user already reacted to this comment
+        existing_reaction = db.execute(
+            'SELECT * FROM comment_reactions WHERE comment_id = ? AND user_id = ?',
+            (comment_id, g.user['id'])
+        ).fetchone()
+
+        if existing_reaction:
+            if existing_reaction['reaction_type'] == reaction_type:
+                # Remove reaction if clicking the same button
+                db.execute(
+                    'DELETE FROM comment_reactions WHERE id = ?',
+                    (existing_reaction['id'],)
+                )
+                action = 'removed'
+            else:
+                # Update reaction if changing from like to dislike or vice versa
+                db.execute(
+                    'UPDATE comment_reactions SET reaction_type = ? WHERE id = ?',
+                    (reaction_type, existing_reaction['id'])
+                )
+                action = 'changed'
+        else:
+            # Add new reaction
+            db.execute(
+                'INSERT INTO comment_reactions (comment_id, user_id, reaction_type) VALUES (?, ?, ?)',
+                (comment_id, g.user['id'], reaction_type)
+            )
+            action = 'added'
+
+        db.commit()
+
+        # Get updated counts using DISTINCT to count unique users
+        likes = db.execute(
+            'SELECT COUNT(DISTINCT user_id) as count FROM comment_reactions WHERE comment_id = ? AND reaction_type = ?',
+            (comment_id, 'like')
+        ).fetchone()['count']
+        
+        dislikes = db.execute(
+            'SELECT COUNT(DISTINCT user_id) as count FROM comment_reactions WHERE comment_id = ? AND reaction_type = ?',
+            (comment_id, 'dislike')
+        ).fetchone()['count']
+
+        return jsonify({
+            'success': True,
+            'action': action,
+            'likes': likes,
+            'dislikes': dislikes
+        })
+
+    except Exception as e:
+        print(f"Error in react_to_comment: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 @bp.route('/<int:id>/favorite', methods=['POST'])
 @login_required
