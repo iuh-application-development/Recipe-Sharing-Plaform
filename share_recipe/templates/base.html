@@ -201,6 +201,11 @@
                                     <i class="fas fa-heart"></i> Công thức yêu thích
                                 </a>
                             </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('blog.saved_recipes') }}">
+                                    <i class="fas fa-bookmark"></i> Công thức đã lưu
+                                </a>
+                            </li>
                             <li><hr class="dropdown-divider"></li>
                             <li>
                                 <a class="dropdown-item" href="{{ url_for('auth.logout') }}">
@@ -234,19 +239,12 @@
                             Món ngon Việt Nam
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Món ngon miền Bắc</a></li>
-                            <li><a class="dropdown-item" href="#">Món ngon miền Trung</a></li>
-                            <li><a class="dropdown-item" href="#">Món ngon miền Nam</a></li>
-                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#">Món nước</a></li>
+                            <li><a class="dropdown-item" href="#">Món cuốn</a></li>
                             <li><a class="dropdown-item" href="#">Món xào</a></li>
                             <li><a class="dropdown-item" href="#">Món kho</a></li>
-                            <li><a class="dropdown-item" href="#">Món nướng</a></li>
-                            <li><a class="dropdown-item" href="#">Món hầm</a></li>
-                            <li><a class="dropdown-item" href="#">Món hấp</a></li>
-                            <li><a class="dropdown-item" href="#">Món chiên</a></li>
-                            <li><a class="dropdown-item" href="#">Món canh</a></li>
-                            <li><a class="dropdown-item" href="#">Món bánh</a></li>
-                            <li><a class="dropdown-item" href="#">Món chè</a></li>
+                            <li><a class="dropdown-item" href="#">Món ăn truyền thống</a></li>
+                            <li><a class="dropdown-item" href="#">Đặc sản vùng miền</a></li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
@@ -254,15 +252,11 @@
                             Món ăn chay
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Món xào</a></li>
-                            <li><a class="dropdown-item" href="#">Món kho</a></li>
-                            <li><a class="dropdown-item" href="#">Món nướng</a></li>
-                            <li><a class="dropdown-item" href="#">Món hầm</a></li>
-                            <li><a class="dropdown-item" href="#">Món hấp</a></li>
-                            <li><a class="dropdown-item" href="#">Món chiên</a></li>
-                            <li><a class="dropdown-item" href="#">Món canh</a></li>
-                            <li><a class="dropdown-item" href="#">Món bánh</a></li>
-                            <li><a class="dropdown-item" href="#">Món chè</a></li>
+                            <li><a class="dropdown-item" href="#">Món chay từ đậu hũ</a></li>
+                            <li><a class="dropdown-item" href="#">Món chay từ rau củ</a></li>
+                            <li><a class="dropdown-item" href="#">Lẩu chay</a></li>
+                            <li><a class="dropdown-item" href="#">Cơm chay</a></li>
+                            <li><a class="dropdown-item" href="#">Món chay giả mặn</a></li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
@@ -270,15 +264,10 @@
                             Món ăn kiêng
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Món xào</a></li>
-                            <li><a class="dropdown-item" href="#">Món kho</a></li>
-                            <li><a class="dropdown-item" href="#">Món nướng</a></li>
-                            <li><a class="dropdown-item" href="#">Món hầm</a></li>
-                            <li><a class="dropdown-item" href="#">Món hấp</a></li>
-                            <li><a class="dropdown-item" href="#">Món chiên</a></li>
-                            <li><a class="dropdown-item" href="#">Món canh</a></li>
-                            <li><a class="dropdown-item" href="#">Món bánh</a></li>
-                            <li><a class="dropdown-item" href="#">Món chè</a></li>
+                            <li><a class="dropdown-item" href="#">Keto</a></li>
+                            <li><a class="dropdown-item" href="#">Eat Clean</a></li>
+                            <li><a class="dropdown-item" href="#">Low-carb</a></li>
+                            <li><a class="dropdown-item" href="#">Chế độ giảm cân</a></li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
@@ -286,15 +275,10 @@
                             Món ăn dịp lễ
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Món xào</a></li>
-                            <li><a class="dropdown-item" href="#">Món kho</a></li>
-                            <li><a class="dropdown-item" href="#">Món nướng</a></li>
-                            <li><a class="dropdown-item" href="#">Món hầm</a></li>
-                            <li><a class="dropdown-item" href="#">Món hấp</a></li>
-                            <li><a class="dropdown-item" href="#">Món chiên</a></li>
-                            <li><a class="dropdown-item" href="#">Món canh</a></li>
-                            <li><a class="dropdown-item" href="#">Món bánh</a></li>
-                            <li><a class="dropdown-item" href="#">Món chè</a></li>
+                            <li><a class="dropdown-item" href="#">Món Tết</a></li>
+                            <li><a class="dropdown-item" href="#">Món Trung Thu</a></li>
+                            <li><a class="dropdown-item" href="#">Món Giáng Sinh</a></li>
+                            <li><a class="dropdown-item" href="#">Món ăn ngày cưới</a></li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
@@ -302,19 +286,24 @@
                             Món ăn Tây
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Món xào</a></li>
-                            <li><a class="dropdown-item" href="#">Món kho</a></li>
-                            <li><a class="dropdown-item" href="#">Món nướng</a></li>
-                            <li><a class="dropdown-item" href="#">Món hầm</a></li>
-                            <li><a class="dropdown-item" href="#">Món hấp</a></li>
-                            <li><a class="dropdown-item" href="#">Món chiên</a></li>
-                            <li><a class="dropdown-item" href="#">Món canh</a></li>
-                            <li><a class="dropdown-item" href="#">Món bánh</a></li>
-                            <li><a class="dropdown-item" href="#">Món chè</a></li>
+                            <li><a class="dropdown-item" href="#">Món Ý</a></li>
+                            <li><a class="dropdown-item" href="#">Món Pháp</a></li>
+                            <li><a class="dropdown-item" href="#">Món Mỹ</a></li>
+                            <li><a class="dropdown-item" href="#">Món Nhật</a></li>
+                            <li><a class="dropdown-item" href="#">Món Hàn</a></li>
                         </ul>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="#">Đồ uống</a>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link text-white dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Đồ uống
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#">Nước ép</a></li>
+                            <li><a class="dropdown-item" href="#">Sinh tố</a></li>
+                            <li><a class="dropdown-item" href="#">Trà</a></li>
+                            <li><a class="dropdown-item" href="#">Cà phê</a></li>
+                            <li><a class="dropdown-item" href="#">Cocktail & Mocktail</a></li>
+                        </ul>
                     </li>
                 </ul>
             </div>

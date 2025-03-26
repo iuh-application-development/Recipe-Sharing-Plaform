@@ -4,6 +4,7 @@ DROP TABLE IF EXISTS blog_images;
 DROP TABLE IF EXISTS comments;
 DROP TABLE IF EXISTS favorites;
 DROP TABLE IF EXISTS comment_reactions;
+DROP TABLE IF EXISTS saved_recipes;
 
 CREATE TABLE user (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -68,4 +69,13 @@ CREATE TABLE comment_reactions (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (comment_id) REFERENCES comments (id) ON DELETE CASCADE,
     UNIQUE(comment_id, user_id)
+);
+
+CREATE TABLE saved_recipes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    post_id INTEGER NOT NULL,
+    created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES user (id),
+    FOREIGN KEY (post_id) REFERENCES post (id)
 );

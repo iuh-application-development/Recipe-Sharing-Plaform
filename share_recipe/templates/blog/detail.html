@@ -335,6 +335,18 @@
     .login-to-react:hover {
         text-decoration: underline;
     }
+
+    .recipe-actions button {
+        transition: all 0.2s ease;
+    }
+
+    .recipe-actions button:hover {
+        transform: scale(1.05);
+    }
+
+    .recipe-actions button:active {
+        transform: scale(0.95);
+    }
 </style>
 
 <script>
@@ -421,14 +433,33 @@ function handleReaction(commentId, reactionType) {
             <span><i class="fas fa-user"></i> {{ post['username'] }}</span>
             <span><i class="fas fa-calendar"></i> {{ post['created'].strftime('%d/%m/%Y') }}</span>
         </div>
-        {% if g.user %}
-            <form action="{{ url_for('blog.toggle_favorite', id=post['id']) }}" method="post" class="favorite-form">
-                <button type="submit" class="btn {% if is_favorite %}btn-danger{% else %}btn-outline-danger{% endif %}" id="favoriteBtn">
-                    <i class="fas fa-heart"></i> 
-                    <span id="favoriteText">{% if is_favorite %}Đã thích{% else %}Thích{% endif %}</span>
+        <div class="recipe-actions">
+            <form action="{{ url_for('blog.toggle_favorite', id=post['id']) }}" method="POST" class="favorite-form d-inline-block">
+                <button type="submit" class="btn {% if is_favorite %}btn-danger{% else %}btn-outline-danger{% endif %} me-2">
+                    <i class="fas fa-heart"></i>
+                    <span class="button-text">
+                        {% if is_favorite %}
+                        Đã thích
+                        {% else %}
+                        Thích
+                        {% endif %}
+                    </span>
                 </button>
             </form>
-        {% endif %}
+
+            <form action="{{ url_for('blog.toggle_save', id=post['id']) }}" method="POST" class="save-form d-inline-block">
+                <button type="submit" class="btn {% if is_saved %}btn-success{% else %}btn-outline-success{% endif %}">
+                    <i class="fas fa-bookmark"></i>
+                    <span class="button-text">
+                        {% if is_saved %}
+                        Đã lưu
+                        {% else %}
+                        Lưu
+                        {% endif %}
+                    </span>
+                </button>
+            </form>
+        </div>
     </div>
 
     {% if post['image_path'] %}
@@ -554,34 +585,78 @@ function handleReaction(commentId, reactionType) {
 {% if g.user %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const form = document.querySelector('.favorite-form');
-    const btn = document.getElementById('favoriteBtn');
-    const text = document.getElementById('favoriteText');
+    // Xử lý form yêu thích
+    const favoriteForm = document.querySelector('.favorite-form');
+    const favoriteButton = favoriteForm.querySelector('button');
+    const favoriteButtonText = favoriteButton.querySelector('.button-text');
 
-    form.addEventListener('submit', function(e) {
+    favoriteForm.addEventListener('submit', async function(e) {
         e.preventDefault();
-        
-        fetch(form.action, {
-            method: 'POST',
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                if (data.is_favorite) {
-                    btn.classList.remove('btn-outline-danger');
-                    btn.classList.add('btn-danger');
-                    text.textContent = 'Đã thích';
-                } else {
-                    btn.classList.remove('btn-danger');
-                    btn.classList.add('btn-outline-danger');
-                    text.textContent = 'Thích';
+        try {
+            const response = await fetch(this.action, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
                 }
+            });
+            
+            if (response.ok) {
+                const isFavorite = favoriteButton.classList.contains('btn-outline-danger');
+                if (isFavorite) {
+                    favoriteButton.classList.remove('btn-outline-danger');
+                    favoriteButton.classList.add('btn-danger');
+                    favoriteButtonText.textContent = 'Đã thích';
+                } else {
+                    favoriteButton.classList.remove('btn-danger');
+                    favoriteButton.classList.add('btn-outline-danger');
+                    favoriteButtonText.textContent = 'Thích';
+                }
+                // Thêm animation
+                favoriteButton.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    favoriteButton.style.transform = 'scale(1)';
+                }, 200);
             }
-        })
-        .catch(error => console.error('Error:', error));
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    });
+
+    // Xử lý form lưu
+    const saveForm = document.querySelector('.save-form');
+    const saveButton = saveForm.querySelector('button');
+    const saveButtonText = saveButton.querySelector('.button-text');
+
+    saveForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        try {
+            const response = await fetch(this.action, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            
+            if (response.ok) {
+                const isSaved = saveButton.classList.contains('btn-outline-success');
+                if (isSaved) {
+                    saveButton.classList.remove('btn-outline-success');
+                    saveButton.classList.add('btn-success');
+                    saveButtonText.textContent = 'Đã lưu';
+                } else {
+                    saveButton.classList.remove('btn-success');
+                    saveButton.classList.add('btn-outline-success');
+                    saveButtonText.textContent = 'Lưu';
+                }
+                // Thêm animation
+                saveButton.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    saveButton.style.transform = 'scale(1)';
+                }, 200);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
     });
 });
 </script>

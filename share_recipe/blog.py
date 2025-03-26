@@ -235,10 +235,20 @@ def detail(id):
         if image:
             post['image_path'] = image['image_path']
             
+        # Check if current user has saved this post
+        is_saved = False
+        if g.user:
+            saved = db.execute(
+                'SELECT * FROM saved_recipes WHERE user_id = ? AND post_id = ?',
+                (g.user['id'], id)
+            ).fetchone()
+            is_saved = saved is not None
+        
         return render_template('blog/detail.html', 
                              post=post, 
                              comments=comments,
-                             is_favorite=is_favorite)
+                             is_favorite=is_favorite,
+                             is_saved=is_saved)
     except Exception as e:
         print(f"Error in detail route: {e}")  # For debugging
         abort(500)
@@ -468,54 +478,59 @@ def react_to_comment(comment_id):
         print(f"Error in react_to_comment: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
-@bp.route('/<int:id>/favorite', methods=['POST'])
+@bp.route('/<int:id>/toggle_favorite', methods=['POST'])
 @login_required
 def toggle_favorite(id):
+    """Toggle favorite status for a recipe."""
+    db = get_db()
+    error = None
+
     try:
-        db = get_db()
-        post = get_post(id, check_author=False)
+        # Check if post exists
+        post = db.execute('SELECT * FROM post WHERE id = ?', (id,)).fetchone()
         if post is None:
-            abort(404)
-        
-        # Kiểm tra xem bài viết đã được yêu thích chưa
-        favorite = db.execute(
-            'SELECT * FROM favorites WHERE user_id = ? AND post_id = ?',
-            (g.user['id'], id)
-        ).fetchone()
-        
-        if favorite:
-            # Nếu đã yêu thích thì xóa
-            db.execute(
-                'DELETE FROM favorites WHERE user_id = ? AND post_id = ?',
-                (g.user['id'], id)
-            )
-            is_favorite = False
+            error = 'Công thức không tồn tại.'
         else:
-            # Nếu chưa yêu thích thì thêm mới
-            db.execute(
-                'INSERT INTO favorites (user_id, post_id) VALUES (?, ?)',
+            # Check if already favorited
+            favorite = db.execute(
+                'SELECT * FROM favorites WHERE user_id = ? AND post_id = ?',
                 (g.user['id'], id)
-            )
-            is_favorite = True
-        
-        db.commit()
-        
-        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            return jsonify({
-                'success': True,
-                'is_favorite': is_favorite
-            })
-        
-        return redirect(url_for('blog.detail', id=id))
-        
+            ).fetchone()
+
+            if favorite is None:
+                # Add to favorites
+                db.execute(
+                    'INSERT INTO favorites (user_id, post_id) VALUES (?, ?)',
+                    (g.user['id'], id)
+                )
+                db.commit()
+                message = 'Đã thêm vào yêu thích!'
+                is_favorite = True
+            else:
+                # Remove from favorites
+                db.execute(
+                    'DELETE FROM favorites WHERE user_id = ? AND post_id = ?',
+                    (g.user['id'], id)
+                )
+                db.commit()
+                message = 'Đã xóa khỏi yêu thích!'
+                is_favorite = False
+
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return jsonify({'success': True, 'message': message, 'is_favorite': is_favorite})
+            else:
+                flash(message, 'success')
+                return redirect(url_for('blog.detail', id=id))
+
     except Exception as e:
-        print(f"Error in toggle_favorite: {e}")
+        error = f'Có lỗi xảy ra: {str(e)}'
+
+    if error is not None:
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            return jsonify({
-                'success': False,
-                'error': str(e)
-            }), 500
-        abort(500)
+            return jsonify({'success': False, 'error': error}), 500
+        flash(error, 'error')
+    
+    return redirect(url_for('blog.detail', id=id))
 
 @bp.route('/favorites')
 @login_required
@@ -551,3 +566,83 @@ def favorites():
                          favorites=favorites,
                          page=page,
                          total_pages=total_pages)
+
+@bp.route('/<int:id>/toggle_save', methods=['POST'])
+@login_required
+def toggle_save(id):
+    """Toggle save status for a recipe."""
+    db = get_db()
+    error = None
+
+    try:
+        # Check if post exists
+        post = db.execute('SELECT * FROM post WHERE id = ?', (id,)).fetchone()
+        if post is None:
+            error = 'Công thức không tồn tại.'
+        else:
+            # Check if already saved
+            saved = db.execute(
+                'SELECT * FROM saved_recipes WHERE user_id = ? AND post_id = ?',
+                (g.user['id'], id)
+            ).fetchone()
+
+            if saved is None:
+                # Save the recipe
+                db.execute(
+                    'INSERT INTO saved_recipes (user_id, post_id) VALUES (?, ?)',
+                    (g.user['id'], id)
+                )
+                db.commit()
+                message = 'Đã lưu công thức!'
+                is_saved = True
+            else:
+                # Unsave the recipe
+                db.execute(
+                    'DELETE FROM saved_recipes WHERE user_id = ? AND post_id = ?',
+                    (g.user['id'], id)
+                )
+                db.commit()
+                message = 'Đã bỏ lưu công thức!'
+                is_saved = False
+
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return jsonify({'success': True, 'message': message, 'is_saved': is_saved})
+            else:
+                flash(message, 'success')
+                return redirect(url_for('blog.detail', id=id))
+
+    except Exception as e:
+        error = f'Có lỗi xảy ra: {str(e)}'
+
+    if error is not None:
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return jsonify({'success': False, 'error': error}), 500
+        flash(error, 'error')
+    
+    return redirect(url_for('blog.detail', id=id))
+
+@bp.route('/saved_recipes')
+@login_required
+def saved_recipes():
+    """Show all saved recipes."""
+    db = get_db()
+    saved_recipes = db.execute(
+        'SELECT p.*, u.username as author_name'
+        ' FROM post p JOIN user u ON p.author_id = u.id'
+        ' JOIN saved_recipes s ON p.id = s.post_id'
+        ' WHERE s.user_id = ?'
+        ' ORDER BY p.created DESC',
+        (g.user['id'],)
+    ).fetchall()
+    return render_template('blog/saved_recipes.html', saved_recipes=saved_recipes)
+
+def get_saved_status(post_id):
+    """Check if current user has saved the post."""
+    if g.user:
+        db = get_db()
+        saved = db.execute(
+            'SELECT * FROM saved_recipes WHERE user_id = ? AND post_id = ?',
+            (g.user['id'], post_id)
+        ).fetchone()
+        return saved is not None
+    return False
