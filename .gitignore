@@ -23,6 +23,7 @@ wheels/
 # Virtual Environment
 venv/
 ENV/
+env/
 
 # IDE
 .idea/
@@ -30,9 +31,26 @@ ENV/
 *.swp
 *.swo
 
-# Database
+# Flask
+instance/
+.webassets-cache
+.env
+
+# Project specific
+share_recipe/static/uploads/
 *.db
 *.sqlite3
 
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+
 # Logs
-*.log 
+*.log
+logs/
+
+# System
+.DS_Store
+Thumbs.db 
