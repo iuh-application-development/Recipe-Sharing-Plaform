@@ -14,7 +14,12 @@ CREATE TABLE user (
     password TEXT NOT NULL,
     email TEXT UNIQUE NOT NULL,
     created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    avatar_path TEXT
+    avatar_path TEXT,
+    role TEXT NOT NULL DEFAULT 'user',
+    is_blocked BOOLEAN NOT NULL DEFAULT 0,
+    gender TEXT,
+    birthdate DATE,
+    phone TEXT
 );
 
 CREATE TABLE post (

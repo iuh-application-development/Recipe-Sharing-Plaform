@@ -809,17 +809,36 @@ def toggle_save(id):
 @bp.route('/saved_recipes')
 @login_required
 def saved_recipes():
-    """Show all saved recipes."""
     db = get_db()
+    page = request.args.get('page', 1, type=int)
+    per_page = 9
+    offset = (page - 1) * per_page
+
+    # Lấy danh sách công thức đã lưu với phân trang
     saved_recipes = db.execute(
-        'SELECT p.*, u.username as author_name'
-        ' FROM post p JOIN user u ON p.author_id = u.id'
-        ' JOIN saved_recipes s ON p.id = s.post_id'
-        ' WHERE s.user_id = ?'
-        ' ORDER BY p.created DESC',
-        (g.user['id'],)
+        'SELECT p.*, u.username as author_name, bi.image_path '
+        'FROM post p '
+        'JOIN saved_recipes sr ON p.id = sr.post_id '
+        'JOIN user u ON p.author_id = u.id '
+        'LEFT JOIN blog_images bi ON p.id = bi.post_id AND bi.is_main_image = 1 '
+        'WHERE sr.user_id = ? '
+        'ORDER BY sr.created DESC '
+        'LIMIT ? OFFSET ?',
+        (g.user['id'], per_page, offset)
     ).fetchall()
-    return render_template('blog/saved_recipes.html', saved_recipes=saved_recipes)
+
+    # Đếm tổng số công thức đã lưu
+    total_saved = db.execute(
+        'SELECT COUNT(*) FROM saved_recipes WHERE user_id = ?',
+        (g.user['id'],)
+    ).fetchone()[0]
+
+    total_pages = (total_saved + per_page - 1) // per_page
+
+    return render_template('blog/saved_recipes.html',
+                         saved_recipes=saved_recipes,
+                         page=page,
+                         total_pages=total_pages)
 
 def get_saved_status(post_id):
     """Check if current user has saved the post."""

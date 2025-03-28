@@ -64,14 +64,16 @@ def login():
         user = db.execute('SELECT * FROM user WHERE email = ?', (email,)).fetchone()
 
         if user is None:
-            error = 'Incorrect email.'
-        elif user and not check_password_hash(user['password'], password):
-            error = 'Incorrect password.'
+            error = 'Email không tồn tại.'
+        elif not check_password_hash(user['password'], password):
+            error = 'Mật khẩu không đúng.'
+        elif user['is_blocked']:
+            error = 'Tài khoản đã bị khóa.'
 
         if error is None:
             session.clear()
             session['user_id'] = user['id']
-            session['username'] = user['username'] # Lưu username vào session
+            session['username'] = user['username']
             return redirect(url_for('index'))
 
         flash(error)
