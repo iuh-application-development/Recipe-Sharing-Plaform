@@ -93,13 +93,13 @@ CREATE TABLE post_tags (
 );
 
 -- Create indexes
-CREATE INDEX idx_post_author ON post(author_id);
-CREATE INDEX idx_blog_images_post ON blog_images(post_id);
-CREATE INDEX idx_post_tags_post ON post_tags(post_id);
-CREATE INDEX idx_post_tags_tag ON post_tags(tag_id);
+CREATE INDEX IF NOT EXISTS idx_post_author ON post(author_id);
+CREATE INDEX IF NOT EXISTS idx_blog_images_post ON blog_images(post_id);
+CREATE INDEX IF NOT EXISTS idx_post_tags_post ON post_tags(post_id);
+CREATE INDEX IF NOT EXISTS idx_post_tags_tag ON post_tags(tag_id);
 
 -- Insert default tags
-INSERT INTO tags (name) VALUES
+INSERT OR IGNORE INTO tags (name) VALUES
   ('Món nước'),
   ('Món cuốn'),
   ('Món xào'),
