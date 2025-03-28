@@ -430,8 +430,20 @@ function handleReaction(commentId, reactionType) {
     <div class="recipe-header">
         <h1 class="recipe-title">{{ post['title'] }}</h1>
         <div class="recipe-meta">
-            <span><i class="fas fa-user"></i> {{ post['username'] }}</span>
-            <span><i class="fas fa-calendar"></i> {{ post['created'].strftime('%d/%m/%Y') }}</span>
+            <div class="author">
+                <i class="fas fa-user"></i>
+                <span>{{ post['username'] }}</span>
+            </div>
+            <div class="date">
+                <i class="fas fa-calendar"></i>
+                <span>{{ post['created'].strftime('%d/%m/%Y') }}</span>
+            </div>
+            <div class="tags">
+                <i class="fas fa-tags"></i>
+                {% for tag in post['tags'] %}
+                <span class="tag">{{ tag.name }}</span>
+                {% endfor %}
+            </div>
         </div>
         <div class="recipe-actions">
             <form action="{{ url_for('blog.toggle_favorite', id=post['id']) }}" method="POST" class="favorite-form d-inline-block">

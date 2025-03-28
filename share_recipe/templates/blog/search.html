@@ -1,176 +1,278 @@
 {% extends 'base.html' %}
 
-{% block title %}Kết quả tìm kiếm cho "{{ query }}"{% endblock %}
+{% block title %}Tìm kiếm công thức{% endblock %}
 
 {% block content %}
-<div class="search-results-container">
-    <div class="search-header">
-        <h1>Kết quả tìm kiếm cho "{{ query }}"</h1>
-        <p>Tìm thấy {{ posts|length }} kết quả</p>
-    </div>
+<div class="container mt-4">
+    <div class="search-container">
+        <h1 class="text-center mb-4">Tìm kiếm công thức</h1>
+        
+        <form method="get" class="search-form mb-4">
+            <div class="input-group">
+                <input type="text" class="form-control" name="q" value="{{ query }}" placeholder="Nhập tên món ăn...">
+                <div class="input-group-append">
+                    <button class="btn btn-primary" type="submit">
+                        <i class="fas fa-search"></i> Tìm kiếm
+                    </button>
+                </div>
+            </div>
+            
+            <div class="tag-filters mt-3">
+                <label class="d-block mb-2">Lọc theo loại món:</label>
+                <div class="tag-options">
+                    <!-- Món ăn cơ bản -->
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="tags" value="Món nước" id="tag-nuoc" {% if 'Món nước' in selected_tags %}checked{% endif %}>
+                        <label class="form-check-label" for="tag-nuoc">Món nước</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="tags" value="Món cuốn" id="tag-cuon" {% if 'Món cuốn' in selected_tags %}checked{% endif %}>
+                        <label class="form-check-label" for="tag-cuon">Món cuốn</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="tags" value="Món xào" id="tag-xao" {% if 'Món xào' in selected_tags %}checked{% endif %}>
+                        <label class="form-check-label" for="tag-xao">Món xào</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="tags" value="Món kho" id="tag-kho" {% if 'Món kho' in selected_tags %}checked{% endif %}>
+                        <label class="form-check-label" for="tag-kho">Món kho</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="tags" value="Món ăn truyền thống" id="tag-truyen-thong" {% if 'Món ăn truyền thống' in selected_tags %}checked{% endif %}>
+                        <label class="form-check-label" for="tag-truyen-thong">Món ăn truyền thống</label>
+                    </div>
 
-    {% if posts %}
-        <div class="recipe-grid">
-            {% for post in posts %}
-                <div class="recipe-card">
-                    <a href="{{ url_for('blog.detail', id=post['id']) }}" class="recipe-link">
-                        <div class="recipe-image">
+                    <!-- Món chay -->
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="tags" value="Món chay từ đậu hũ" id="tag-chay-dau" {% if 'Món chay từ đậu hũ' in selected_tags %}checked{% endif %}>
+                        <label class="form-check-label" for="tag-chay-dau">Món chay từ đậu hũ</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="tags" value="Món chay từ rau củ" id="tag-chay-rau" {% if 'Món chay từ rau củ' in selected_tags %}checked{% endif %}>
+                        <label class="form-check-label" for="tag-chay-rau">Món chay từ rau củ</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="tags" value="Lẩu chay" id="tag-lau-chay" {% if 'Lẩu chay' in selected_tags %}checked{% endif %}>
+                        <label class="form-check-label" for="tag-lau-chay">Lẩu chay</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="tags" value="Cơm chay" id="tag-com-chay" {% if 'Cơm chay' in selected_tags %}checked{% endif %}>
+                        <label class="form-check-label" for="tag-com-chay">Cơm chay</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="tags" value="Món chay giả mặn" id="tag-chay-man" {% if 'Món chay giả mặn' in selected_tags %}checked{% endif %}>
+                        <label class="form-check-label" for="tag-chay-man">Món chay giả mặn</label>
+                    </div>
+
+                    <!-- Chế độ ăn kiêng -->
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="tags" value="Keto" id="tag-keto" {% if 'Keto' in selected_tags %}checked{% endif %}>
+                        <label class="form-check-label" for="tag-keto">Keto</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="tags" value="Eat clean" id="tag-eat-clean" {% if 'Eat clean' in selected_tags %}checked{% endif %}>
+                        <label class="form-check-label" for="tag-eat-clean">Eat clean</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="tags" value="Low-carb" id="tag-low-carb" {% if 'Low-carb' in selected_tags %}checked{% endif %}>
+                        <label class="form-check-label" for="tag-low-carb">Low-carb</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="tags" value="Chế độ giảm cân" id="tag-giam-can" {% if 'Chế độ giảm cân' in selected_tags %}checked{% endif %}>
+                        <label class="form-check-label" for="tag-giam-can">Chế độ giảm cân</label>
+                    </div>
+
+                    <!-- Món theo dịp -->
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="tags" value="Món Tết" id="tag-tet" {% if 'Món Tết' in selected_tags %}checked{% endif %}>
+                        <label class="form-check-label" for="tag-tet">Món Tết</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="tags" value="Món Trung thu" id="tag-trung-thu" {% if 'Món Trung thu' in selected_tags %}checked{% endif %}>
+                        <label class="form-check-label" for="tag-trung-thu">Món Trung thu</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="tags" value="Món Giáng sinh" id="tag-giang-sinh" {% if 'Món Giáng sinh' in selected_tags %}checked{% endif %}>
+                        <label class="form-check-label" for="tag-giang-sinh">Món Giáng sinh</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="tags" value="Món ăn ngày cưới" id="tag-cuoi" {% if 'Món ăn ngày cưới' in selected_tags %}checked{% endif %}>
+                        <label class="form-check-label" for="tag-cuoi">Món ăn ngày cưới</label>
+                    </div>
+
+                    <!-- Món quốc tế -->
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="tags" value="Món Ý" id="tag-y" {% if 'Món Ý' in selected_tags %}checked{% endif %}>
+                        <label class="form-check-label" for="tag-y">Món Ý</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="tags" value="Món Pháp" id="tag-phap" {% if 'Món Pháp' in selected_tags %}checked{% endif %}>
+                        <label class="form-check-label" for="tag-phap">Món Pháp</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="tags" value="Món Mỹ" id="tag-my" {% if 'Món Mỹ' in selected_tags %}checked{% endif %}>
+                        <label class="form-check-label" for="tag-my">Món Mỹ</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="tags" value="Món Nhật" id="tag-nhat" {% if 'Món Nhật' in selected_tags %}checked{% endif %}>
+                        <label class="form-check-label" for="tag-nhat">Món Nhật</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="tags" value="Món Hàn" id="tag-han" {% if 'Món Hàn' in selected_tags %}checked{% endif %}>
+                        <label class="form-check-label" for="tag-han">Món Hàn</label>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        {% if query or selected_tags %}
+            <div class="search-criteria mb-4">
+                <h2 class="mb-3">Kết quả tìm kiếm:</h2>
+                {% if query %}
+                    <p class="mb-2">Từ khóa: "{{ query }}"</p>
+                {% endif %}
+                {% if selected_tags %}
+                    <p class="mb-2">Loại món: {{ selected_tags|join(', ') }}</p>
+                {% endif %}
+            </div>
+            
+            {% if posts %}
+                <div class="row">
+                    {% for post in posts %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100">
                             {% if post.image_path %}
-                                <img src="{{ url_for('static', filename=post.image_path) }}" alt="{{ post['title'] }}">
-                            {% else %}
-                                <img src="{{ url_for('static', filename='default-recipe.jpg') }}" alt="{{ post['title'] }}">
+                            <img src="{{ url_for('static', filename=post.image_path) }}" class="card-img-top" alt="{{ post.title }}">
                             {% endif %}
-                        </div>
-                        <div class="recipe-info">
-                            <h2 class="recipe-title">{{ post['title'] }}</h2>
-                            {% if post.description %}
-                                <p class="recipe-description">{{ post['description']|truncate(100) }}</p>
-                            {% endif %}
-                            <div class="recipe-meta">
-                                <span class="author">
-                                    <i class="fas fa-user"></i> {{ post['username'] }}
-                                </span>
-                                <span class="date">
-                                    <i class="fas fa-calendar"></i> {{ post['created'].strftime('%d-%m-%Y') }}
-                                </span>
+                            <div class="card-body">
+                                <h5 class="card-title">{{ post.title }}</h5>
+                                <p class="card-text">{{ post.description }}</p>
+                                <div class="card-meta">
+                                    <small class="text-muted">
+                                        <i class="fas fa-user"></i> {{ post.username }}
+                                    </small>
+                                    <small class="text-muted ml-2">
+                                        <i class="fas fa-calendar"></i> {{ post.created.strftime('%d/%m/%Y') }}
+                                    </small>
+                                </div>
+                                <div class="post-tags mt-2">
+                                    {% for tag in post.tags %}
+                                    <a href="{{ url_for('blog.search', tags=[tag.name]) }}" class="tag">{{ tag.name }}</a>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <a href="{{ url_for('blog.detail', id=post.id) }}" class="btn btn-primary btn-sm">
+                                    Xem chi tiết
+                                </a>
                             </div>
                         </div>
-                    </a>
+                    </div>
+                    {% endfor %}
                 </div>
-            {% endfor %}
-        </div>
-    {% else %}
-        <div class="no-results">
-            <p>Không tìm thấy món ăn nào phù hợp với từ khóa "{{ query }}"</p>
-            <a href="{{ url_for('blog.index') }}" class="btn btn-primary">Quay lại trang chủ</a>
-        </div>
-    {% endif %}
+            {% else %}
+                <div class="alert alert-info">
+                    Không tìm thấy công thức nào phù hợp với tiêu chí tìm kiếm.
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
 </div>
 
 <style>
-.search-results-container {
+.search-container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 2rem;
+    padding: 20px;
 }
 
-.search-header {
-    margin-bottom: 2rem;
-    text-align: center;
-}
-
-.search-header h1 {
-    font-size: 2rem;
-    color: #333;
-    margin-bottom: 0.5rem;
-}
-
-.search-header p {
-    color: #666;
-    font-size: 1.1rem;
-}
-
-.recipe-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.recipe-card {
-    background: white;
+.search-form {
+    background: #fff;
+    padding: 20px;
     border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    transition: transform 0.2s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.recipe-card:hover {
+.tag-filters {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 4px;
+}
+
+.tag-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.form-check-inline {
+    margin-right: 0;
+}
+
+.card {
+    transition: transform 0.2s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.card:hover {
     transform: translateY(-5px);
 }
 
-.recipe-link {
-    text-decoration: none;
-    color: inherit;
-}
-
-.recipe-image {
-    width: 100%;
+.card-img-top {
     height: 200px;
-    overflow: hidden;
-}
-
-.recipe-image img {
-    width: 100%;
-    height: 100%;
     object-fit: cover;
 }
 
-.recipe-info {
-    padding: 1rem;
+.card-meta {
+    margin-top: 10px;
 }
 
-.recipe-title {
-    font-size: 1.25rem;
-    margin-bottom: 0.5rem;
-    color: #333;
+.card-footer {
+    background: none;
+    border-top: none;
+    padding: 10px 15px;
 }
 
-.recipe-description {
-    color: #666;
-    font-size: 0.9rem;
-    margin-bottom: 1rem;
-    line-height: 1.4;
-}
-
-.recipe-meta {
-    display: flex;
-    justify-content: space-between;
-    color: #888;
-    font-size: 0.85rem;
-}
-
-.recipe-meta i {
-    margin-right: 0.25rem;
-}
-
-.no-results {
-    text-align: center;
-    padding: 3rem;
-}
-
-.no-results p {
-    font-size: 1.1rem;
-    color: #666;
-    margin-bottom: 1rem;
-}
-
-.btn-primary {
-    display: inline-block;
-    padding: 0.5rem 1rem;
-    background-color: #4CAF50;
-    color: white;
-    text-decoration: none;
+.search-criteria {
+    background: #f8f9fa;
+    padding: 15px;
     border-radius: 4px;
-    transition: background-color 0.2s;
+    margin-bottom: 20px;
 }
 
-.btn-primary:hover {
-    background-color: #45a049;
+.search-criteria h2 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
 }
 
-/* Responsive design cho màn hình nhỏ */
-@media (max-width: 1200px) {
-    .recipe-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
+.search-criteria p {
+    margin-bottom: 5px;
 }
 
-@media (max-width: 768px) {
-    .recipe-grid {
-        grid-template-columns: 1fr;
-    }
+.post-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 10px;
+}
+
+.tag {
+    background-color: #e9ecef;
+    color: #495057;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    display: inline-flex;
+    align-items: center;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.tag:hover {
+    background-color: #dee2e6;
+    transform: translateY(-1px);
+    color: #495057;
+    text-decoration: none;
 }
 </style>
 {% endblock %} 

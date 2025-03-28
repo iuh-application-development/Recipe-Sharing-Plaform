@@ -5,6 +5,8 @@ DROP TABLE IF EXISTS comments;
 DROP TABLE IF EXISTS favorites;
 DROP TABLE IF EXISTS comment_reactions;
 DROP TABLE IF EXISTS saved_recipes;
+DROP TABLE IF EXISTS post_tags;
+DROP TABLE IF EXISTS tags;
 
 CREATE TABLE user (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -78,4 +80,17 @@ CREATE TABLE saved_recipes (
     created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES user (id),
     FOREIGN KEY (post_id) REFERENCES post (id)
+);
+
+CREATE TABLE tags (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL UNIQUE
+);
+
+CREATE TABLE post_tags (
+    post_id INTEGER NOT NULL,
+    tag_id INTEGER NOT NULL,
+    PRIMARY KEY (post_id, tag_id),
+    FOREIGN KEY (post_id) REFERENCES post (id) ON DELETE CASCADE,
+    FOREIGN KEY (tag_id) REFERENCES tags (id) ON DELETE CASCADE
 );

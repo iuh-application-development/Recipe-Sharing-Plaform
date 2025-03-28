@@ -71,9 +71,17 @@
 
         <div class="profile-section user-recipes">
             <h2>Công thức của tôi</h2>
+            <div class="recipe-actions">
+                <button id="deleteSelected" class="btn btn-danger" style="display: none;">
+                    <i class="fas fa-trash"></i> Xóa đã chọn
+                </button>
+            </div>
             <div class="recipe-grid">
                 {% for post in user_posts %}
                 <div class="recipe-card">
+                    <div class="recipe-checkbox">
+                        <input type="checkbox" class="post-checkbox" data-post-id="{{ post['id'] }}">
+                    </div>
                     <a href="{{ url_for('blog.detail', id=post['id']) }}" class="recipe-link">
                         <div class="recipe-image">
                             {% if post.image_path %}
@@ -91,6 +99,16 @@
                             </div>
                         </div>
                     </a>
+                    <div class="recipe-actions">
+                        <a href="{{ url_for('blog.update', id=post['id']) }}" class="btn btn-edit">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <form action="{{ url_for('blog.delete', id=post['id']) }}" method="post" class="delete-form" style="display: inline;">
+                            <button type="submit" class="btn btn-delete" onclick="return confirm('Bạn có chắc chắn muốn xóa công thức này?')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
+                    </div>
                 </div>
                 {% else %}
                 <p class="no-recipes">Bạn chưa có công thức nào.</p>
@@ -109,9 +127,95 @@ document.getElementById("imageUpload").addEventListener("change", function() {
             document.getElementById("imagePreview").src = e.target.result;
         }
         reader.readAsDataURL(file);
-        // Tự động submit form khi có file được chọn
         document.getElementById("avatar-form").submit();
     }
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    const checkboxes = document.querySelectorAll('.post-checkbox');
+    const deleteSelectedBtn = document.getElementById('deleteSelected');
+    
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const checkedBoxes = document.querySelectorAll('.post-checkbox:checked');
+            deleteSelectedBtn.style.display = checkedBoxes.length > 0 ? 'block' : 'none';
+        });
+    });
+
+    deleteSelectedBtn.addEventListener('click', function() {
+        const checkedBoxes = document.querySelectorAll('.post-checkbox:checked');
+        if (checkedBoxes.length > 0) {
+            if (confirm('Bạn có chắc chắn muốn xóa các công thức đã chọn?')) {
+                const postIds = Array.from(checkedBoxes).map(cb => cb.dataset.postId);
+                fetch('{{ url_for("blog.delete_multiple") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ post_ids: postIds })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Có lỗi xảy ra khi xóa công thức.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Có lỗi xảy ra khi xóa công thức.');
+                });
+            }
+        }
+    });
+});
 </script>
+
+<style>
+.recipe-checkbox {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1;
+}
+
+.recipe-actions {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    display: flex;
+    gap: 5px;
+}
+
+.btn-edit, .btn-delete {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    color: white;
+}
+
+.btn-edit {
+    background-color: #4CAF50;
+}
+
+.btn-delete {
+    background-color: #f44336;
+}
+
+.btn-danger {
+    background-color: #f44336;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-bottom: 15px;
+}
+
+.recipe-card {
+    position: relative;
+}
+</style>
 {% endblock %} 

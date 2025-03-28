@@ -1,20 +1,227 @@
 {% extends 'base.html' %}
 
-{% block header %}
-  <h1>{% block title %}Edit "{{ post['title'] }}"{% endblock %}</h1>
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='blog.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 {% endblock %}
 
+{% block title %}Chỉnh sửa công thức{% endblock %}
+
 {% block content %}
-  <form method="post">
-    <label for="title">Title</label>
-    <input name="title" id="title"
-      value="{{ request.form['title'] or post['title'] }}" required>
-    <label for="body">Body</label>
-    <textarea name="body" id="body">{{ request.form['body'] or post['body'] }}</textarea>
-    <input type="submit" value="Save">
-  </form>
-  <hr>
-  <form action="{{ url_for('blog.delete', id=post['id']) }}" method="post">
-    <input class="danger" type="submit" value="Delete" onclick="return confirm('Are you sure?');">
-  </form>
+<div class="container mt-4">
+    <div class="recipe-form-container">
+        <h1 class="text-center mb-4">Chỉnh sửa công thức</h1>
+        
+        <form method="post" enctype="multipart/form-data" class="recipe-form">
+            <div class="form-group">
+                <label for="title">Tiêu đề</label>
+                <input type="text" class="form-control" id="title" name="title" value="{{ post.title }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Mô tả</label>
+                <textarea class="form-control" id="description" name="description" rows="3">{{ post.description }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="ingredients">Nguyên liệu</label>
+                <textarea class="form-control" id="ingredients" name="ingredients" rows="5" required>{{ post.ingredients }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="instructions">Hướng dẫn</label>
+                <textarea class="form-control" id="instructions" name="instructions" rows="10" required>{{ post.instructions }}</textarea>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="cooking_time">Thời gian nấu (phút)</label>
+                        <input type="number" class="form-control" id="cooking_time" name="cooking_time" min="0" value="{{ post.cooking_time }}">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="servings">Khẩu phần (người)</label>
+                        <input type="number" class="form-control" id="servings" name="servings" min="1" value="{{ post.servings }}">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="image">Ảnh món ăn</label>
+                {% if post.image %}
+                <div class="current-image mb-3">
+                    <img src="{{ post.image }}" alt="Current recipe image" class="img-thumbnail" style="max-height: 200px;">
+                </div>
+                {% endif %}
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="image" name="image" accept="image/*">
+                    <label class="custom-file-label" for="image">Chọn ảnh mới...</label>
+                </div>
+            </div>
+
+            <div class="form-group mt-4">
+                <button type="submit" class="btn btn-primary btn-lg btn-block">
+                    <i class="fas fa-save"></i> Lưu thay đổi
+                </button>
+                <a href="{{ url_for('blog.detail', id=post.id) }}" class="btn btn-secondary btn-lg btn-block">
+                    <i class="fas fa-times"></i> Hủy
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Form change detection
+    let formChanged = false;
+    const form = document.querySelector('.recipe-form');
+    const formInputs = form.querySelectorAll('input, textarea, select');
+    
+    formInputs.forEach(input => {
+        input.addEventListener('change', () => {
+            formChanged = true;
+        });
+    });
+
+    // Prevent leaving page with unsaved changes
+    window.addEventListener('beforeunload', (e) => {
+        if (formChanged) {
+            e.preventDefault();
+            e.returnValue = '';
+            return '';
+        }
+    });
+
+    // Image upload preview
+    const imageInput = document.getElementById('image');
+    const fileLabel = document.querySelector('.custom-file-label');
+    const currentImageContainer = document.querySelector('.current-image');
+    
+    imageInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            fileLabel.textContent = file.name;
+            formChanged = true;
+
+            // Preview new image
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                if (currentImageContainer) {
+                    currentImageContainer.querySelector('img').src = e.target.result;
+                } else {
+                    const newImageContainer = document.createElement('div');
+                    newImageContainer.className = 'current-image mb-3';
+                    newImageContainer.innerHTML = `<img src="${e.target.result}" alt="New recipe image" class="img-thumbnail" style="max-height: 200px;">`;
+                    imageInput.parentNode.insertBefore(newImageContainer, imageInput);
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+});
+</script>
+
+<style>
+.recipe-form-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.recipe-form {
+    padding: 20px;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-control {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    font-size: 1rem;
+}
+
+.form-control:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.custom-file {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+.custom-file-input {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    height: calc(1.5em + 0.75rem + 2px);
+    margin: 0;
+    opacity: 0;
+}
+
+.custom-file-label {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    z-index: 1;
+    height: calc(1.5em + 0.75rem);
+    padding: 0.375rem 0.75rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+}
+
+.btn-block {
+    display: block;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.btn-lg {
+    padding: 0.75rem 1.5rem;
+    font-size: 1.25rem;
+}
+
+.btn i {
+    margin-right: 5px;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.mb-4 {
+    margin-bottom: 1.5rem;
+}
+
+.mt-4 {
+    margin-top: 1.5rem;
+}
+
+.current-image {
+    text-align: center;
+}
+
+.current-image img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+</style>
 {% endblock %}
