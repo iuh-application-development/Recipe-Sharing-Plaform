@@ -1,10 +1,10 @@
 # **Recipe Sharing Platform**
 
 ## **Thành viên nhóm**
-- **Thành viên 1:** Trần Văn Huy
-- **Thành viên 2:** Nguyễn Thanh Quyền
-- **Thành viên 3:** Nguyễn Võ Đức
-- **Thành viên 4:** Long Hồ
+- **Thành viên 1:** Trần Văn Huy - 21130971
+- **Thành viên 2:** Nguyễn Thanh Quyền - 
+- **Thành viên 3:** Nguyễn Võ Đức - 21061511
+- **Thành viên 4:** Huỳnh Long Hồ - 21008411
 
 ## **1. Tổng Quan**
 
