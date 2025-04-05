@@ -239,12 +239,12 @@
                             Món ngon Việt Nam
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Món nước</a></li>
-                            <li><a class="dropdown-item" href="#">Món cuốn</a></li>
-                            <li><a class="dropdown-item" href="#">Món xào</a></li>
-                            <li><a class="dropdown-item" href="#">Món kho</a></li>
-                            <li><a class="dropdown-item" href="#">Món ăn truyền thống</a></li>
-                            <li><a class="dropdown-item" href="#">Đặc sản vùng miền</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('blog.category', category='Món nước') }}">Món nước</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('blog.category', category='Món cuốn') }}">Món cuốn</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('blog.category', category='Món xào') }}">Món xào</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('blog.category', category='Món kho') }}">Món kho</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('blog.category', category='Món ăn truyền thống') }}">Món ăn truyền thống</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('blog.category', category='Đặc sản vùng miền') }}">Đặc sản vùng miền</a></li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
@@ -252,11 +252,11 @@
                             Món ăn chay
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Món chay từ đậu hũ</a></li>
-                            <li><a class="dropdown-item" href="#">Món chay từ rau củ</a></li>
-                            <li><a class="dropdown-item" href="#">Lẩu chay</a></li>
-                            <li><a class="dropdown-item" href="#">Cơm chay</a></li>
-                            <li><a class="dropdown-item" href="#">Món chay giả mặn</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('blog.category', category='Món chay từ đậu hũ') }}">Món chay từ đậu hũ</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('blog.category', category='Món chay từ rau củ') }}">Món chay từ rau củ</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('blog.category', category='Lẩu chay') }}">Lẩu chay</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('blog.category', category='Cơm chay') }}">Cơm chay</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('blog.category', category='Món chay giả mặn') }}">Món chay giả mặn</a></li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
@@ -264,10 +264,10 @@
                             Món ăn kiêng
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Keto</a></li>
-                            <li><a class="dropdown-item" href="#">Eat Clean</a></li>
-                            <li><a class="dropdown-item" href="#">Low-carb</a></li>
-                            <li><a class="dropdown-item" href="#">Chế độ giảm cân</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('blog.category', category='Keto') }}">Keto</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('blog.category', category='Eat Clean') }}">Eat Clean</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('blog.category', category='Low-carb') }}">Low-carb</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('blog.category', category='Chế độ giảm cân') }}">Chế độ giảm cân</a></li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
@@ -275,10 +275,10 @@
                             Món ăn dịp lễ
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Món Tết</a></li>
-                            <li><a class="dropdown-item" href="#">Món Trung Thu</a></li>
-                            <li><a class="dropdown-item" href="#">Món Giáng Sinh</a></li>
-                            <li><a class="dropdown-item" href="#">Món ăn ngày cưới</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('blog.category', category='Món Tết') }}">Món Tết</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('blog.category', category='Món Trung Thu') }}">Món Trung Thu</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('blog.category', category='Món Giáng Sinh') }}">Món Giáng Sinh</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('blog.category', category='Món ăn ngày cưới') }}">Món ăn ngày cưới</a></li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
@@ -286,11 +286,11 @@
                             Món ăn Tây
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Món Ý</a></li>
-                            <li><a class="dropdown-item" href="#">Món Pháp</a></li>
-                            <li><a class="dropdown-item" href="#">Món Mỹ</a></li>
-                            <li><a class="dropdown-item" href="#">Món Nhật</a></li>
-                            <li><a class="dropdown-item" href="#">Món Hàn</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('blog.category', category='Món Ý') }}">Món Ý</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('blog.category', category='Món Pháp') }}">Món Pháp</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('blog.category', category='Món Mỹ') }}">Món Mỹ</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('blog.category', category='Món Nhật') }}">Món Nhật</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('blog.category', category='Món Hàn') }}">Món Hàn</a></li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
@@ -298,11 +298,11 @@
                             Đồ uống
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Nước ép</a></li>
-                            <li><a class="dropdown-item" href="#">Sinh tố</a></li>
-                            <li><a class="dropdown-item" href="#">Trà</a></li>
-                            <li><a class="dropdown-item" href="#">Cà phê</a></li>
-                            <li><a class="dropdown-item" href="#">Cocktail & Mocktail</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('blog.category', category='Nước ép') }}">Nước ép</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('blog.category', category='Sinh tố') }}">Sinh tố</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('blog.category', category='Trà') }}">Trà</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('blog.category', category='Cà phê') }}">Cà phê</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('blog.category', category='Cocktail & Mocktail') }}">Cocktail & Mocktail</a></li>
                         </ul>
                     </li>
                 </ul>

@@ -850,3 +850,42 @@ def get_saved_status(post_id):
         ).fetchone()
         return saved is not None
     return False
+
+@bp.route('/category/<category>')
+def category(category):
+    db = get_db()
+    page = request.args.get('page', 1, type=int)
+    per_page = 9
+    offset = (page - 1) * per_page
+
+    # Lấy danh sách bài viết theo category
+    posts = db.execute(
+        'SELECT p.id, p.title, p.created, p.author_id, '
+        'u.username, bi.image_path '
+        'FROM post p '
+        'JOIN user u ON p.author_id = u.id '
+        'LEFT JOIN blog_images bi ON p.id = bi.post_id AND bi.is_main_image = 1 '
+        'JOIN post_tags pt ON p.id = pt.post_id '
+        'JOIN tags t ON pt.tag_id = t.id '
+        'WHERE t.name = ? '
+        'ORDER BY p.created DESC '
+        'LIMIT ? OFFSET ?',
+        (category, per_page, offset)
+    ).fetchall()
+
+    posts = [dict(post) for post in posts]
+    total_posts = db.execute(
+        'SELECT COUNT(*) FROM post p '
+        'JOIN post_tags pt ON p.id = pt.post_id '
+        'JOIN tags t ON pt.tag_id = t.id '
+        'WHERE t.name = ?',
+        (category,)
+    ).fetchone()[0]
+    
+    total_pages = (total_posts + per_page - 1) // per_page
+
+    return render_template('blog/category.html', 
+                         posts=posts, 
+                         category=category,
+                         page=page, 
+                         total_pages=total_pages)
