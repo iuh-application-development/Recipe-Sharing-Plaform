@@ -155,6 +155,11 @@
                                         <i class="fas fa-calendar"></i> {{ post.created.strftime('%d/%m/%Y') }}
                                     </small>
                                 </div>
+                                <div class="recipe-stats">
+                                    <span class="likes">
+                                        <i class="fas fa-heart"></i> {{ post['like_count'] }} lượt thích
+                                    </span>
+                                </div>
                                 <div class="post-tags mt-2">
                                     {% for tag in post.tags %}
                                     <a href="{{ url_for('blog.search', tags=[tag.name]) }}" class="tag">{{ tag.name }}</a>
@@ -225,6 +230,20 @@
 
 .card-meta {
     margin-top: 10px;
+}
+
+.recipe-stats {
+    display: flex;
+    justify-content: center;
+    margin-top: 0.5rem;
+    color: #dc3545;
+    font-size: 0.9rem;
+}
+
+.recipe-stats .likes {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
 }
 
 .card-footer {

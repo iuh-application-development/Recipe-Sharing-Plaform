@@ -41,7 +41,8 @@ def index():
 
     posts = db.execute(
         'SELECT p.id, p.title, p.created, p.author_id, '
-        'u.username, bi.image_path '
+        'u.username, bi.image_path, '
+        '(SELECT COUNT(*) FROM favorites f WHERE f.post_id = p.id) as like_count '
         'FROM post p '
         'JOIN user u ON p.author_id = u.id '
         'LEFT JOIN blog_images bi ON p.id = bi.post_id AND bi.is_main_image = 1 '
@@ -514,7 +515,8 @@ def search():
     # Base query
     base_query = '''
         SELECT DISTINCT p.id, p.title, p.description, p.created, p.author_id,
-        u.username, bi.image_path
+        u.username, bi.image_path,
+        (SELECT COUNT(*) FROM favorites f WHERE f.post_id = p.id) as like_count
         FROM post p
         JOIN user u ON p.author_id = u.id
         LEFT JOIN blog_images bi ON p.id = bi.post_id AND bi.is_main_image = 1
@@ -728,7 +730,8 @@ def favorites():
     # Lấy danh sách bài viết yêu thích
     favorites = db.execute(
         'SELECT p.id, p.title, p.created, p.author_id, '
-        'u.username, bi.image_path '
+        'u.username, bi.image_path, '
+        '(SELECT COUNT(*) FROM favorites f WHERE f.post_id = p.id) as like_count '
         'FROM favorites f '
         'JOIN post p ON f.post_id = p.id '
         'JOIN user u ON p.author_id = u.id '
@@ -816,7 +819,8 @@ def saved_recipes():
 
     # Lấy danh sách công thức đã lưu với phân trang
     saved_recipes = db.execute(
-        'SELECT p.*, u.username as author_name, bi.image_path '
+        'SELECT p.*, u.username as author_name, bi.image_path, '
+        '(SELECT COUNT(*) FROM favorites f WHERE f.post_id = p.id) as like_count '
         'FROM post p '
         'JOIN saved_recipes sr ON p.id = sr.post_id '
         'JOIN user u ON p.author_id = u.id '
@@ -858,10 +862,10 @@ def category(category):
     per_page = 9
     offset = (page - 1) * per_page
 
-    # Lấy danh sách bài viết theo category
     posts = db.execute(
         'SELECT p.id, p.title, p.created, p.author_id, '
-        'u.username, bi.image_path '
+        'u.username, bi.image_path, '
+        '(SELECT COUNT(*) FROM favorites f WHERE f.post_id = p.id) as like_count '
         'FROM post p '
         'JOIN user u ON p.author_id = u.id '
         'LEFT JOIN blog_images bi ON p.id = bi.post_id AND bi.is_main_image = 1 '
@@ -874,6 +878,8 @@ def category(category):
     ).fetchall()
 
     posts = [dict(post) for post in posts]
+
+    # Get total number of posts for pagination
     total_posts = db.execute(
         'SELECT COUNT(*) FROM post p '
         'JOIN post_tags pt ON p.id = pt.post_id '
@@ -881,11 +887,12 @@ def category(category):
         'WHERE t.name = ?',
         (category,)
     ).fetchone()[0]
-    
+
     total_pages = (total_posts + per_page - 1) // per_page
 
-    return render_template('blog/category.html', 
-                         posts=posts, 
+    return render_template('blog/category.html',
+                         posts=posts,
                          category=category,
-                         page=page, 
-                         total_pages=total_pages)
+                         page=page,
+                         total_pages=total_pages,
+                         total_posts=total_posts)

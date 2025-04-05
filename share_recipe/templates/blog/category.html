@@ -38,6 +38,11 @@
                             <i class="fas fa-calendar"></i> {{ post['created'].strftime('%d-%m-%Y') }}
                         </span>
                     </div>
+                    <div class="recipe-stats">
+                        <span class="likes">
+                            <i class="fas fa-heart"></i> {{ post['like_count'] }} lượt thích
+                        </span>
+                    </div>
                 </div>
             </a>
         </div>
@@ -229,6 +234,24 @@
     .recipe-grid {
         grid-template-columns: 1fr;
     }
+}
+
+.recipe-stats {
+    display: flex;
+    justify-content: center;
+    margin-top: 0.5rem;
+    color: #dc3545;
+    font-size: 0.9rem;
+}
+
+.recipe-stats .likes {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.recipe-stats i {
+    font-size: 1rem;
 }
 </style>
 {% endblock %} 
