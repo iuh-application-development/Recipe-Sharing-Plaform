@@ -126,6 +126,22 @@
         </form>
 
         {% if query or selected_tags %}
+            <div class="sorting-options mb-4">
+                <div class="d-flex align-items-center">
+                    <span class="mr-3">Sắp xếp theo:</span>
+                    <div class="btn-group" role="group">
+                        <a href="{{ url_for('blog.search', q=query, tags=selected_tags, sort='likes') }}" 
+                           class="btn {% if sort_by == 'likes' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                           <i class="fas fa-heart"></i> Lượt yêu thích
+                        </a>
+                        <a href="{{ url_for('blog.search', q=query, tags=selected_tags, sort='newest') }}"
+                           class="btn {% if sort_by == 'newest' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                           <i class="fas fa-clock"></i> Mới nhất
+                        </a>
+                    </div>
+                </div>
+            </div>
+
             <div class="search-criteria mb-4">
                 <h2 class="mb-3">Kết quả tìm kiếm:</h2>
                 {% if query %}
@@ -293,5 +309,65 @@
     color: #495057;
     text-decoration: none;
 }
+
+.sorting-options {
+    background: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.sorting-options .btn-group {
+    margin-left: 10px;
+}
+
+.sorting-options .btn {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+}
+
+.sorting-options .btn i {
+    font-size: 0.85rem;
+}
+
+sort-options .btn:hover {
+    transform: translateY(-1px);
+}
+
+sorting-options .btn-outline-primary:hover {
+    background-color: #007bff15;
+    color: #007bff;
+    border-color: #007bff;
+}
 </style>
-{% endblock %} 
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const buttons = document.querySelectorAll('.sorting-options .btn');
+
+        buttons.forEach(button => {
+            button.addEventListener('click', function (event) {
+                event.preventDefault(); // Prevent default link behavior
+
+                // Update button styles
+                buttons.forEach(btn => {
+                    btn.classList.remove('btn-primary');
+                    btn.classList.add('btn-outline-primary');
+                });
+                this.classList.remove('btn-outline-primary');
+                this.classList.add('btn-primary');
+
+                // Redirect to the URL in the button's href attribute
+                const targetUrl = this.getAttribute('href');
+                if (targetUrl) {
+                    window.location.href = targetUrl;
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

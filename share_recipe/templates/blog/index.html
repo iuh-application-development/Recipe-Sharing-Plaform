@@ -127,7 +127,7 @@
     object-fit: cover;
 }
 
-.recipe-info {
+recipe-info {
     padding: 1rem;
 }
 
@@ -225,5 +225,27 @@
         grid-template-columns: 1fr; /* 1 cột trên màn hình nhỏ */
     }
 }
+
+.btn.active {
+    background-color: #007bff; /* Blue color */
+    color: white;
+    border-color: #007bff;
+}
 </style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const buttons = document.querySelectorAll('.btn');
+
+        buttons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove active class from all buttons
+                buttons.forEach(btn => btn.classList.remove('active'));
+
+                // Add active class to the clicked button
+                button.classList.add('active');
+            });
+        });
+    });
+</script>
 {% endblock %}

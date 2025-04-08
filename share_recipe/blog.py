@@ -505,6 +505,7 @@ def delete_comment(comment_id):
 def search():
     query = request.args.get('q', '')
     selected_tags = request.args.getlist('tags')
+    sort_by = request.args.get('sort', 'newest')
     
     # Chỉ chuyển hướng nếu không có bất kỳ tiêu chí tìm kiếm nào
     if not query and not selected_tags:
@@ -545,8 +546,11 @@ def search():
     if conditions:
         base_query += ' WHERE ' + ' AND '.join(conditions)
     
-    # Add ORDER BY
-    base_query += ' ORDER BY p.created DESC'
+    # Add ORDER BY clause based on sort_by
+    if sort_by == 'likes':
+        base_query += ' ORDER BY like_count DESC'
+    else:  # Default to newest
+        base_query += ' ORDER BY p.created DESC'
     
     # Execute query
     posts = db.execute(base_query, params).fetchall()
