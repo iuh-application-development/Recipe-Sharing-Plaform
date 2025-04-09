@@ -16,12 +16,16 @@
                         <th>ID</th>
                         <th>Tiêu đề</th>
                         <th>Tác giả</th>
-                        <th>Ngày tạo</th>
                         <th>
-                            <select id="sort-posts" class="form-select">
-                                <option value="newest">Mới nhất</option>
-                                <option value="oldest">Cũ nhất</option>
-                            </select>
+                            <div class="d-flex align-items-center">
+                                Ngày tạo
+                                <div class="ms-2">
+                                    <select id="sort-posts" class="form-select form-select-sm">
+                                        <option value="newest">Mới nhất</option>
+                                        <option value="oldest">Cũ nhất</option>
+                                    </select>
+                                </div>
+                            </div>
                         </th>
                         <th>
                             <button type="button" class="btn btn-danger" id="delete-selected-posts">
@@ -38,12 +42,6 @@
                         <td>{{ post['title'] }}</td>
                         <td>{{ post['author_email'] }}</td>
                         <td>{{ post['created'].strftime('%Y-%m-%d %H:%M') }}</td>
-                        <td>
-                            <select id="sort-posts" class="form-select">
-                                <option value="newest">Mới nhất</option>
-                                <option value="oldest">Cũ nhất</option>
-                            </select>
-                        </td>
                         <td></td>
                     </tr>
                     {% endfor %}
