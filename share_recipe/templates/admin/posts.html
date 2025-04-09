@@ -23,7 +23,11 @@
                                 <option value="oldest">Cũ nhất</option>
                             </select>
                         </th>
-                        <th>Thao tác</th>
+                        <th>
+                            <button type="button" class="btn btn-danger" id="delete-selected-posts">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -40,19 +44,12 @@
                                 <option value="oldest">Cũ nhất</option>
                             </select>
                         </td>
-                        <td>
-                            <form action="{{ url_for('admin.delete_post', id=post['id']) }}" method="post" style="display: inline;">
-                                <button type="submit" class="btn btn-danger btn-sm" title="Xóa" onclick="return confirm('Bạn có chắc chắn muốn xóa bài viết này?')">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </form>
-                        </td>
+                        <td></td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
-        <button type="button" class="btn btn-danger" id="delete-selected-posts">Xóa đã chọn</button>
     </div>
 </div>
 {% endblock %} 
