@@ -12,20 +12,34 @@
             <table class="table table-hover">
                 <thead>
                     <tr>
+                        <th><input type="checkbox" id="select-all-posts"></th>
                         <th>ID</th>
                         <th>Tiêu đề</th>
                         <th>Tác giả</th>
                         <th>Ngày tạo</th>
+                        <th>
+                            <select id="sort-posts" class="form-select">
+                                <option value="newest">Mới nhất</option>
+                                <option value="oldest">Cũ nhất</option>
+                            </select>
+                        </th>
                         <th>Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for post in posts %}
                     <tr>
+                        <td><input type="checkbox" class="select-post" value="{{ post['id'] }}"></td>
                         <td>{{ post['id'] }}</td>
                         <td>{{ post['title'] }}</td>
                         <td>{{ post['author_email'] }}</td>
                         <td>{{ post['created'].strftime('%Y-%m-%d %H:%M') }}</td>
+                        <td>
+                            <select id="sort-posts" class="form-select">
+                                <option value="newest">Mới nhất</option>
+                                <option value="oldest">Cũ nhất</option>
+                            </select>
+                        </td>
                         <td>
                             <form action="{{ url_for('admin.delete_post', id=post['id']) }}" method="post" style="display: inline;">
                                 <button type="submit" class="btn btn-danger btn-sm" title="Xóa" onclick="return confirm('Bạn có chắc chắn muốn xóa bài viết này?')">
@@ -38,6 +52,7 @@
                 </tbody>
             </table>
         </div>
+        <button type="button" class="btn btn-danger" id="delete-selected-posts">Xóa đã chọn</button>
     </div>
 </div>
 {% endblock %} 

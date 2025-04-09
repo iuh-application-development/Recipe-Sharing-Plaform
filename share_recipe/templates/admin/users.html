@@ -15,6 +15,7 @@
             <table class="table table-hover">
                 <thead>
                     <tr>
+                        <th><input type="checkbox" id="select-all-users"></th>
                         <th>ID</th>
                         <th>Email</th>
                         <th>Username</th>
@@ -26,6 +27,7 @@
                 <tbody>
                     {% for user in users %}
                     <tr>
+                        <td><input type="checkbox" class="select-user" value="{{ user['id'] }}"></td>
                         <td>{{ user['id'] }}</td>
                         <td>{{ user['email'] }}</td>
                         <td>{{ user['username'] }}</td>
@@ -76,6 +78,7 @@
                 </tbody>
             </table>
         </div>
+        <button type="button" class="btn btn-danger" id="delete-selected-users">Xóa đã chọn</button>
     </div>
 </div>
 {% endblock %}

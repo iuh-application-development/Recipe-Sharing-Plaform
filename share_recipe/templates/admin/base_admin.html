@@ -136,4 +136,71 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Select all posts
+        const selectAllPosts = document.getElementById('select-all-posts');
+        const postCheckboxes = document.querySelectorAll('.select-post');
+        selectAllPosts.addEventListener('change', function() {
+            postCheckboxes.forEach(checkbox => checkbox.checked = this.checked);
+        });
+
+        // Delete selected posts
+        const deleteSelectedPosts = document.getElementById('delete-selected-posts');
+        deleteSelectedPosts.addEventListener('click', function() {
+            const selectedIds = Array.from(postCheckboxes)
+                .filter(checkbox => checkbox.checked)
+                .map(checkbox => checkbox.value);
+            if (selectedIds.length > 0) {
+                fetch('/admin/delete_posts', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ ids: selectedIds })
+                }).then(response => {
+                    if (response.ok) {
+                        location.reload();
+                    }
+                });
+            }
+        });
+
+        // Sort posts
+        const sortPosts = document.getElementById('sort-posts');
+        sortPosts.addEventListener('change', function() {
+            const sortOrder = this.value;
+            window.location.href = `/admin/posts?sort=${sortOrder}`;
+        });
+
+        // Select all users
+        const selectAllUsers = document.getElementById('select-all-users');
+        const userCheckboxes = document.querySelectorAll('.select-user');
+        selectAllUsers.addEventListener('change', function() {
+            userCheckboxes.forEach(checkbox => checkbox.checked = this.checked);
+        });
+
+        // Delete selected users
+        const deleteSelectedUsers = document.getElementById('delete-selected-users');
+        deleteSelectedUsers.addEventListener('click', function() {
+            const selectedIds = Array.from(userCheckboxes)
+                .filter(checkbox => checkbox.checked)
+                .map(checkbox => checkbox.value);
+            if (selectedIds.length > 0) {
+                fetch('/admin/delete_users', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ ids: selectedIds })
+                }).then(response => {
+                    if (response.ok) {
+                        location.reload();
+                    }
+                });
+            }
+        });
+    });
+</script>
 {% endblock %} 

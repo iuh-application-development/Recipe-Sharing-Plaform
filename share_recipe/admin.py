@@ -204,15 +204,13 @@ def dashboard():
 def posts():
     if g.user['role'] != 'admin':
         return redirect(url_for('index'))
-    
+
+    sort_order = request.args.get('sort', 'newest')
     db = get_db()
-    posts = db.execute('''
-        SELECT p.*, u.email as author_email 
-        FROM post p 
-        JOIN user u ON p.author_id = u.id 
-        ORDER BY p.created DESC
-    ''').fetchall()
-    
+    if sort_order == 'oldest':
+        posts = db.execute('SELECT * FROM post ORDER BY created ASC').fetchall()
+    else:
+        posts = db.execute('SELECT * FROM post ORDER BY created DESC').fetchall()
     return render_template('admin/posts.html', posts=posts)
 
 @bp.route('/posts/<int:id>/delete', methods=['POST'])
@@ -235,6 +233,40 @@ def delete_post(id):
         db.rollback()
     
     return redirect(url_for('admin.posts'))
+
+@bp.route('/delete_posts', methods=['POST'])
+@login_required
+def delete_posts():
+    if g.user['role'] != 'admin':
+        return redirect(url_for('index'))
+
+    ids = request.json.get('ids', [])
+    db = get_db()
+    try:
+        db.executemany('DELETE FROM post WHERE id = ?', [(id,) for id in ids])
+        db.commit()
+    except Exception as e:
+        logging.error(f"Error deleting posts: {e}")
+        db.rollback()
+        return {'success': False}, 500
+    return {'success': True}, 200
+
+@bp.route('/delete_users', methods=['POST'])
+@login_required
+def delete_users():
+    if g.user['role'] != 'admin':
+        return redirect(url_for('index'))
+
+    ids = request.json.get('ids', [])
+    db = get_db()
+    try:
+        db.executemany('DELETE FROM user WHERE id = ?', [(id,) for id in ids])
+        db.commit()
+    except Exception as e:
+        logging.error(f"Error deleting users: {e}")
+        db.rollback()
+        return {'success': False}, 500
+    return {'success': True}, 200
 
 def create_default_admin():
     db = get_db()
