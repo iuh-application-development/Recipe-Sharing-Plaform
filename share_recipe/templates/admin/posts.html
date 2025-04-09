@@ -1,3 +1,23 @@
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const sortSelect = document.getElementById('sort-posts');
+        const urlParams = new URLSearchParams(window.location.search);
+        const sortOrder = urlParams.get('sort');
+
+        // Set the dropdown to the current sort order
+        if (sortOrder) {
+            sortSelect.value = sortOrder;
+        }
+
+        // Add event listener to sort posts without refreshing
+        sortSelect.addEventListener('change', function() {
+            const selectedValue = sortSelect.value;
+            const currentUrl = window.location.href.split('?')[0];
+            window.location.href = `${currentUrl}?sort=${selectedValue}`;
+        });
+    });
+</script>
+
 {% extends 'admin/base_admin.html' %}
 
 {% block admin_title %}Quản lý bài viết{% endblock %}

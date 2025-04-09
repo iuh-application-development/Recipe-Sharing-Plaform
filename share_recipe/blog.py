@@ -5,6 +5,7 @@ from werkzeug.exceptions import abort
 import os
 from werkzeug.utils import secure_filename
 from datetime import datetime
+import random
 
 from share_recipe.auth import login_required
 from share_recipe.db import get_db
@@ -86,11 +87,21 @@ def create():
         else:
             db = get_db()
             try:
+                # Generate a unique 3-digit ID
+                while True:
+                    random_id = random.randint(100, 999)
+                    existing_id = db.execute(
+                        'SELECT id FROM post WHERE id = ?',
+                        (random_id,)
+                    ).fetchone()
+                    if not existing_id:
+                        break
+
                 # Insert bài viết
                 cursor = db.execute(
-                    'INSERT INTO post (author_id, title, description, ingredients, instructions, cooking_time, servings) '
-                    'VALUES (?, ?, ?, ?, ?, ?, ?)',
-                    (g.user['id'], title, description, ingredients, instructions, cooking_time, servings)
+                    'INSERT INTO post (id, author_id, title, description, ingredients, instructions, cooking_time, servings) '
+                    'VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+                    (random_id, g.user['id'], title, description, ingredients, instructions, cooking_time, servings)
                 )
                 post_id = cursor.lastrowid
 
