@@ -57,6 +57,28 @@
         border-bottom: 2px solid #e9ecef;
     }
 
+    .recipe-section p {
+        font-family: 'Roboto', sans-serif, Arial, 'Helvetica Neue', Helvetica;
+        line-height: 1.6;
+        font-size: 16px;
+        color: #333;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        text-align: justify;
+    }
+
+    .content-wrapper {
+        font-family: 'Roboto', sans-serif, Arial, 'Helvetica Neue', Helvetica;
+        line-height: 1.8;
+        font-size: 16px;
+        color: #333;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        text-align: justify;
+        margin-bottom: 1rem;
+        white-space: pre-wrap;
+    }
+
     .recipe-info {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
@@ -494,17 +516,17 @@ function handleReaction(commentId, reactionType) {
 
         <div class="recipe-section">
             <h2>Mô tả</h2>
-            <p>{{ post['description'] }}</p>
+            <div class="content-wrapper">{{ post['description']|replace('\n', '<br>')|safe }}</div>
         </div>
 
         <div class="recipe-section">
             <h2>Nguyên liệu</h2>
-            <p>{{ post['ingredients'] }}</p>
+            <div class="content-wrapper">{{ post['ingredients']|replace('\n', '<br>')|safe }}</div>
         </div>
 
         <div class="recipe-section">
             <h2>Cách làm</h2>
-            <p>{{ post['instructions'] }}</p>
+            <div class="content-wrapper">{{ post['instructions']|replace('\n', '<br>')|safe }}</div>
         </div>
     </div>
 
