@@ -59,7 +59,6 @@
                                 <th>Tiêu đề</th>
                                 <th>Tác giả</th>
                                 <th>Ngày tạo</th>
-                                <th>Thao tác</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -68,13 +67,6 @@
                                 <td>{{ post['title'] }}</td>
                                 <td>{{ post['author_email'] }}</td>
                                 <td>{{ post['created'].strftime('%Y-%m-%d %H:%M') }}</td>
-                                <td>
-                                    <form action="{{ url_for('admin.delete_post', id=post['id']) }}" method="post" style="display: inline;">
-                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Bạn có chắc chắn muốn xóa bài viết này?')">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </form>
-                                </td>
                             </tr>
                             {% endfor %}
                         </tbody>
