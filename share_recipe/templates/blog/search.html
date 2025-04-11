@@ -8,7 +8,7 @@
         <h1 class="text-center mb-4">Tìm kiếm công thức</h1>
         
         <form method="get" class="search-form mb-4">
-            <div class="input-group">
+            <div class="input-group mb-3">
                 <input type="text" class="form-control" name="q" value="{{ query }}" placeholder="Nhập tên món ăn...">
                 <div class="input-group-append">
                     <button class="btn btn-primary" type="submit">
@@ -17,124 +17,66 @@
                 </div>
             </div>
             
-            <div class="tag-filters mt-3">
+            <div class="tag-filters">
                 <label class="d-block mb-2">Lọc theo loại món:</label>
-                <div class="tag-options">
+                <select name="tag" class="form-select">
+                    <option value="">-- Tất cả loại món --</option>
                     <!-- Món ăn cơ bản -->
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" name="tags" value="Món nước" id="tag-nuoc" {% if 'Món nước' in selected_tags %}checked{% endif %}>
-                        <label class="form-check-label" for="tag-nuoc">Món nước</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" name="tags" value="Món cuốn" id="tag-cuon" {% if 'Món cuốn' in selected_tags %}checked{% endif %}>
-                        <label class="form-check-label" for="tag-cuon">Món cuốn</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" name="tags" value="Món xào" id="tag-xao" {% if 'Món xào' in selected_tags %}checked{% endif %}>
-                        <label class="form-check-label" for="tag-xao">Món xào</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" name="tags" value="Món kho" id="tag-kho" {% if 'Món kho' in selected_tags %}checked{% endif %}>
-                        <label class="form-check-label" for="tag-kho">Món kho</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" name="tags" value="Món ăn truyền thống" id="tag-truyen-thong" {% if 'Món ăn truyền thống' in selected_tags %}checked{% endif %}>
-                        <label class="form-check-label" for="tag-truyen-thong">Món ăn truyền thống</label>
-                    </div>
+                    <optgroup label="Món ăn cơ bản">
+                        <option value="Món nước" {% if selected_tag == 'Món nước' %}selected{% endif %}>Món nước</option>
+                        <option value="Món cuốn" {% if selected_tag == 'Món cuốn' %}selected{% endif %}>Món cuốn</option>
+                        <option value="Món xào" {% if selected_tag == 'Món xào' %}selected{% endif %}>Món xào</option>
+                        <option value="Món kho" {% if selected_tag == 'Món kho' %}selected{% endif %}>Món kho</option>
+                        <option value="Món ăn truyền thống" {% if selected_tag == 'Món ăn truyền thống' %}selected{% endif %}>Món ăn truyền thống</option>
+                    </optgroup>
 
                     <!-- Món chay -->
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" name="tags" value="Món chay từ đậu hũ" id="tag-chay-dau" {% if 'Món chay từ đậu hũ' in selected_tags %}checked{% endif %}>
-                        <label class="form-check-label" for="tag-chay-dau">Món chay từ đậu hũ</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" name="tags" value="Món chay từ rau củ" id="tag-chay-rau" {% if 'Món chay từ rau củ' in selected_tags %}checked{% endif %}>
-                        <label class="form-check-label" for="tag-chay-rau">Món chay từ rau củ</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" name="tags" value="Lẩu chay" id="tag-lau-chay" {% if 'Lẩu chay' in selected_tags %}checked{% endif %}>
-                        <label class="form-check-label" for="tag-lau-chay">Lẩu chay</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" name="tags" value="Cơm chay" id="tag-com-chay" {% if 'Cơm chay' in selected_tags %}checked{% endif %}>
-                        <label class="form-check-label" for="tag-com-chay">Cơm chay</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" name="tags" value="Món chay giả mặn" id="tag-chay-man" {% if 'Món chay giả mặn' in selected_tags %}checked{% endif %}>
-                        <label class="form-check-label" for="tag-chay-man">Món chay giả mặn</label>
-                    </div>
+                    <optgroup label="Món chay">
+                        <option value="Món chay từ đậu hũ" {% if selected_tag == 'Món chay từ đậu hũ' %}selected{% endif %}>Món chay từ đậu hũ</option>
+                        <option value="Món chay từ rau củ" {% if selected_tag == 'Món chay từ rau củ' %}selected{% endif %}>Món chay từ rau củ</option>
+                        <option value="Lẩu chay" {% if selected_tag == 'Lẩu chay' %}selected{% endif %}>Lẩu chay</option>
+                        <option value="Cơm chay" {% if selected_tag == 'Cơm chay' %}selected{% endif %}>Cơm chay</option>
+                        <option value="Món chay giả mặn" {% if selected_tag == 'Món chay giả mặn' %}selected{% endif %}>Món chay giả mặn</option>
+                    </optgroup>
 
                     <!-- Chế độ ăn kiêng -->
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" name="tags" value="Keto" id="tag-keto" {% if 'Keto' in selected_tags %}checked{% endif %}>
-                        <label class="form-check-label" for="tag-keto">Keto</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" name="tags" value="Eat clean" id="tag-eat-clean" {% if 'Eat clean' in selected_tags %}checked{% endif %}>
-                        <label class="form-check-label" for="tag-eat-clean">Eat clean</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" name="tags" value="Low-carb" id="tag-low-carb" {% if 'Low-carb' in selected_tags %}checked{% endif %}>
-                        <label class="form-check-label" for="tag-low-carb">Low-carb</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" name="tags" value="Chế độ giảm cân" id="tag-giam-can" {% if 'Chế độ giảm cân' in selected_tags %}checked{% endif %}>
-                        <label class="form-check-label" for="tag-giam-can">Chế độ giảm cân</label>
-                    </div>
+                    <optgroup label="Chế độ ăn kiêng">
+                        <option value="Keto" {% if selected_tag == 'Keto' %}selected{% endif %}>Keto</option>
+                        <option value="Eat clean" {% if selected_tag == 'Eat clean' %}selected{% endif %}>Eat clean</option>
+                        <option value="Low-carb" {% if selected_tag == 'Low-carb' %}selected{% endif %}>Low-carb</option>
+                        <option value="Chế độ giảm cân" {% if selected_tag == 'Chế độ giảm cân' %}selected{% endif %}>Chế độ giảm cân</option>
+                    </optgroup>
 
                     <!-- Món theo dịp -->
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" name="tags" value="Món Tết" id="tag-tet" {% if 'Món Tết' in selected_tags %}checked{% endif %}>
-                        <label class="form-check-label" for="tag-tet">Món Tết</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" name="tags" value="Món Trung thu" id="tag-trung-thu" {% if 'Món Trung thu' in selected_tags %}checked{% endif %}>
-                        <label class="form-check-label" for="tag-trung-thu">Món Trung thu</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" name="tags" value="Món Giáng sinh" id="tag-giang-sinh" {% if 'Món Giáng sinh' in selected_tags %}checked{% endif %}>
-                        <label class="form-check-label" for="tag-giang-sinh">Món Giáng sinh</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" name="tags" value="Món ăn ngày cưới" id="tag-cuoi" {% if 'Món ăn ngày cưới' in selected_tags %}checked{% endif %}>
-                        <label class="form-check-label" for="tag-cuoi">Món ăn ngày cưới</label>
-                    </div>
+                    <optgroup label="Món theo dịp">
+                        <option value="Món Tết" {% if selected_tag == 'Món Tết' %}selected{% endif %}>Món Tết</option>
+                        <option value="Món Trung thu" {% if selected_tag == 'Món Trung thu' %}selected{% endif %}>Món Trung thu</option>
+                        <option value="Món Giáng sinh" {% if selected_tag == 'Món Giáng sinh' %}selected{% endif %}>Món Giáng sinh</option>
+                        <option value="Món ăn ngày cưới" {% if selected_tag == 'Món ăn ngày cưới' %}selected{% endif %}>Món ăn ngày cưới</option>
+                    </optgroup>
 
                     <!-- Món quốc tế -->
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" name="tags" value="Món Ý" id="tag-y" {% if 'Món Ý' in selected_tags %}checked{% endif %}>
-                        <label class="form-check-label" for="tag-y">Món Ý</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" name="tags" value="Món Pháp" id="tag-phap" {% if 'Món Pháp' in selected_tags %}checked{% endif %}>
-                        <label class="form-check-label" for="tag-phap">Món Pháp</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" name="tags" value="Món Mỹ" id="tag-my" {% if 'Món Mỹ' in selected_tags %}checked{% endif %}>
-                        <label class="form-check-label" for="tag-my">Món Mỹ</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" name="tags" value="Món Nhật" id="tag-nhat" {% if 'Món Nhật' in selected_tags %}checked{% endif %}>
-                        <label class="form-check-label" for="tag-nhat">Món Nhật</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" name="tags" value="Món Hàn" id="tag-han" {% if 'Món Hàn' in selected_tags %}checked{% endif %}>
-                        <label class="form-check-label" for="tag-han">Món Hàn</label>
-                    </div>
-                </div>
+                    <optgroup label="Món quốc tế">
+                        <option value="Món Ý" {% if selected_tag == 'Món Ý' %}selected{% endif %}>Món Ý</option>
+                        <option value="Món Pháp" {% if selected_tag == 'Món Pháp' %}selected{% endif %}>Món Pháp</option>
+                        <option value="Món Mỹ" {% if selected_tag == 'Món Mỹ' %}selected{% endif %}>Món Mỹ</option>
+                        <option value="Món Nhật" {% if selected_tag == 'Món Nhật' %}selected{% endif %}>Món Nhật</option>
+                        <option value="Món Hàn" {% if selected_tag == 'Món Hàn' %}selected{% endif %}>Món Hàn</option>
+                    </optgroup>
+                </select>
             </div>
         </form>
 
-        {% if query or selected_tags %}
+        {% if query or selected_tag %}
             <div class="sorting-options mb-4">
                 <div class="d-flex align-items-center">
                     <span class="mr-3">Sắp xếp theo:</span>
                     <div class="btn-group" role="group">
-                        <a href="{{ url_for('blog.search', q=query, tags=selected_tags, sort='likes') }}" 
+                        <a href="{{ url_for('blog.search', q=query, tag=selected_tag, sort='likes') }}" 
                            class="btn {% if sort_by == 'likes' %}btn-primary{% else %}btn-outline-primary{% endif %}">
                            <i class="fas fa-heart"></i> Lượt yêu thích
                         </a>
-                        <a href="{{ url_for('blog.search', q=query, tags=selected_tags, sort='newest') }}"
+                        <a href="{{ url_for('blog.search', q=query, tag=selected_tag, sort='newest') }}"
                            class="btn {% if sort_by == 'newest' %}btn-primary{% else %}btn-outline-primary{% endif %}">
                            <i class="fas fa-clock"></i> Mới nhất
                         </a>
@@ -147,8 +89,8 @@
                 {% if query %}
                     <p class="mb-2">Từ khóa: "{{ query }}"</p>
                 {% endif %}
-                {% if selected_tags %}
-                    <p class="mb-2">Loại món: {{ selected_tags|join(', ') }}</p>
+                {% if selected_tag %}
+                    <p class="mb-2">Loại món: {{ selected_tag }}</p>
                 {% endif %}
             </div>
             
@@ -176,11 +118,11 @@
                                         <i class="fas fa-heart"></i> {{ post['like_count'] }} lượt thích
                                     </span>
                                 </div>
+                                {% if post.tag %}
                                 <div class="post-tags mt-2">
-                                    {% for tag in post.tags %}
-                                    <a href="{{ url_for('blog.search', tags=[tag.name]) }}" class="tag">{{ tag.name }}</a>
-                                    {% endfor %}
+                                    <span class="tag">{{ post.tag }}</span>
                                 </div>
+                                {% endif %}
                             </div>
                             <div class="card-footer">
                                 <a href="{{ url_for('blog.detail', id=post.id) }}" class="btn btn-primary btn-sm">
@@ -218,16 +160,6 @@
     background: #f8f9fa;
     padding: 15px;
     border-radius: 4px;
-}
-
-.tag-options {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-.form-check-inline {
-    margin-right: 0;
 }
 
 .card {
@@ -284,13 +216,6 @@
     margin-bottom: 5px;
 }
 
-.post-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-    margin-top: 10px;
-}
-
 .tag {
     background-color: #e9ecef;
     color: #495057;
@@ -299,75 +224,6 @@
     font-size: 0.75rem;
     display: inline-flex;
     align-items: center;
-    transition: all 0.2s ease;
-    text-decoration: none;
-}
-
-.tag:hover {
-    background-color: #dee2e6;
-    transform: translateY(-1px);
-    color: #495057;
-    text-decoration: none;
-}
-
-.sorting-options {
-    background: #fff;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.sorting-options .btn-group {
-    margin-left: 10px;
-}
-
-.sorting-options .btn {
-    padding: 8px 16px;
-    font-size: 0.9rem;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    transition: all 0.2s ease;
-}
-
-.sorting-options .btn i {
-    font-size: 0.85rem;
-}
-
-sort-options .btn:hover {
-    transform: translateY(-1px);
-}
-
-sorting-options .btn-outline-primary:hover {
-    background-color: #007bff15;
-    color: #007bff;
-    border-color: #007bff;
 }
 </style>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const buttons = document.querySelectorAll('.sorting-options .btn');
-
-        buttons.forEach(button => {
-            button.addEventListener('click', function (event) {
-                event.preventDefault(); // Prevent default link behavior
-
-                // Update button styles
-                buttons.forEach(btn => {
-                    btn.classList.remove('btn-primary');
-                    btn.classList.add('btn-outline-primary');
-                });
-                this.classList.remove('btn-outline-primary');
-                this.classList.add('btn-primary');
-
-                // Redirect to the URL in the button's href attribute
-                const targetUrl = this.getAttribute('href');
-                if (targetUrl) {
-                    window.location.href = targetUrl;
-                }
-            });
-        });
-    });
-</script>
 {% endblock %}

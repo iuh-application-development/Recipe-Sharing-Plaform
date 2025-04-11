@@ -207,10 +207,24 @@ def posts():
 
     sort_order = request.args.get('sort', 'newest')
     db = get_db()
+    
+    # Base query with joins
+    base_query = '''
+        SELECT p.*, u.username as author_name, u.email as author_email,
+        (SELECT COUNT(*) FROM favorites f WHERE f.post_id = p.id) as like_count
+        FROM post p
+        JOIN user u ON p.author_id = u.id
+    '''
+    
+    # Add ORDER BY clause based on sort_order
     if sort_order == 'oldest':
-        posts = db.execute('SELECT * FROM post ORDER BY created ASC').fetchall()
-    else:
-        posts = db.execute('SELECT * FROM post ORDER BY created DESC').fetchall()
+        base_query += ' ORDER BY p.created ASC'
+    elif sort_order == 'likes':
+        base_query += ' ORDER BY like_count DESC'
+    else:  # Default to newest
+        base_query += ' ORDER BY p.created DESC'
+    
+    posts = db.execute(base_query).fetchall()
     return render_template('admin/posts.html', posts=posts)
 
 @bp.route('/posts/<int:id>/delete', methods=['POST'])

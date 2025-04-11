@@ -50,54 +50,42 @@
             </div>
 
             <div class="form-group">
-                <label for="tags">Phân loại món ăn</label>
-                <div class="tag-input-container">
-                    <div class="selected-tags" id="selectedTags"></div>
-                    <div class="tag-management">
-                        <div class="suggested-tags mb-3">
-                            <!-- Món ăn cơ bản -->
-                            <span class="suggested-tag" data-tag="Món nước">Món nước</span>
-                            <span class="suggested-tag" data-tag="Món cuốn">Món cuốn</span>
-                            <span class="suggested-tag" data-tag="Món xào">Món xào</span>
-                            <span class="suggested-tag" data-tag="Món kho">Món kho</span>
-                            <span class="suggested-tag" data-tag="Món ăn truyền thống">Món ăn truyền thống</span>
+                <label for="tags">Phân loại món ăn <small class="text-muted">(Chỉ chọn 1 loại)</small></label>
+                <select class="form-control" id="tags" name="tags" required>
+                    <option value="">-- Chọn loại món ăn --</option>
+                    <!-- Món ăn cơ bản -->
+                    <option value="Món nước">Món nước</option>
+                    <option value="Món cuốn">Món cuốn</option>
+                    <option value="Món xào">Món xào</option>
+                    <option value="Món kho">Món kho</option>
+                    <option value="Món ăn truyền thống">Món ăn truyền thống</option>
 
-                            <!-- Món chay -->
-                            <span class="suggested-tag" data-tag="Món chay từ đậu hũ">Món chay từ đậu hũ</span>
-                            <span class="suggested-tag" data-tag="Món chay từ rau củ">Món chay từ rau củ</span>
-                            <span class="suggested-tag" data-tag="Lẩu chay">Lẩu chay</span>
-                            <span class="suggested-tag" data-tag="Cơm chay">Cơm chay</span>
-                            <span class="suggested-tag" data-tag="Món chay giả mặn">Món chay giả mặn</span>
+                    <!-- Món chay -->
+                    <option value="Món chay từ đậu hũ">Món chay từ đậu hũ</option>
+                    <option value="Món chay từ rau củ">Món chay từ rau củ</option>
+                    <option value="Lẩu chay">Lẩu chay</option>
+                    <option value="Cơm chay">Cơm chay</option>
+                    <option value="Món chay giả mặn">Món chay giả mặn</option>
 
-                            <!-- Chế độ ăn kiêng -->
-                            <span class="suggested-tag" data-tag="Keto">Keto</span>
-                            <span class="suggested-tag" data-tag="Eat clean">Eat clean</span>
-                            <span class="suggested-tag" data-tag="Low-carb">Low-carb</span>
-                            <span class="suggested-tag" data-tag="Chế độ giảm cân">Chế độ giảm cân</span>
+                    <!-- Chế độ ăn kiêng -->
+                    <option value="Keto">Keto</option>
+                    <option value="Eat clean">Eat clean</option>
+                    <option value="Low-carb">Low-carb</option>
+                    <option value="Chế độ giảm cân">Chế độ giảm cân</option>
 
-                            <!-- Món theo dịp -->
-                            <span class="suggested-tag" data-tag="Món Tết">Món Tết</span>
-                            <span class="suggested-tag" data-tag="Món Trung thu">Món Trung thu</span>
-                            <span class="suggested-tag" data-tag="Món Giáng sinh">Món Giáng sinh</span>
-                            <span class="suggested-tag" data-tag="Món ăn ngày cưới">Món ăn ngày cưới</span>
+                    <!-- Món theo dịp -->
+                    <option value="Món Tết">Món Tết</option>
+                    <option value="Món Trung thu">Món Trung thu</option>
+                    <option value="Món Giáng sinh">Món Giáng sinh</option>
+                    <option value="Món ăn ngày cưới">Món ăn ngày cưới</option>
 
-                            <!-- Món quốc tế -->
-                            <span class="suggested-tag" data-tag="Món Ý">Món Ý</span>
-                            <span class="suggested-tag" data-tag="Món Pháp">Món Pháp</span>
-                            <span class="suggested-tag" data-tag="Món Mỹ">Món Mỹ</span>
-                            <span class="suggested-tag" data-tag="Món Nhật">Món Nhật</span>
-                            <span class="suggested-tag" data-tag="Món Hàn">Món Hàn</span>
-
-                            <!-- Đồ uống -->
-                            <span class="suggested-tag" data-tag="Nước ép">Nước ép</span>
-                            <span class="suggested-tag" data-tag="Sinh tố">Sinh tố</span>
-                            <span class="suggested-tag" data-tag="Trà">Trà</span>
-                            <span class="suggested-tag" data-tag="Cà phê">Cà phê</span>
-                            <span class="suggested-tag" data-tag="Cocktail & Mocktail">Cocktail & Mocktail</span>
-                        </div>
-                    </div>
-                </div>
-                <input type="hidden" name="tags" id="tagsInput">
+                    <!-- Món quốc tế -->
+                    <option value="Món Ý">Món Ý</option>
+                    <option value="Món Pháp">Món Pháp</option>
+                    <option value="Món Mỹ">Món Mỹ</option>
+                    <option value="Món Nhật">Món Nhật</option>
+                    <option value="Món Hàn">Món Hàn</option>
+                </select>
             </div>
 
             <div class="form-group">

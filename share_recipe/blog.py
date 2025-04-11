@@ -71,7 +71,7 @@ def create():
         instructions = request.form['instructions']
         cooking_time = request.form.get('cooking_time', 0)
         servings = request.form.get('servings', 0)
-        tags = request.form.get('tags', '').split(',')
+        tag = request.form.get('tags', '').strip()  # Chỉ lấy 1 tag
         
         error = None
 
@@ -81,6 +81,8 @@ def create():
             error = 'Nguyên liệu không được để trống.'
         elif not instructions:
             error = 'Cách làm không được để trống.'
+        elif not tag:
+            error = 'Vui lòng chọn loại món ăn.'
 
         if error is not None:
             flash(error)
@@ -105,32 +107,29 @@ def create():
                 )
                 post_id = cursor.lastrowid
 
-                # Xử lý tags
-                if tags and tags[0]:  # Kiểm tra nếu có tags
-                    for tag_name in tags:
-                        tag_name = tag_name.strip()
-                        if tag_name:
-                            # Kiểm tra xem tag đã tồn tại chưa
-                            tag = db.execute(
-                                'SELECT id FROM tags WHERE name = ?',
-                                (tag_name,)
-                            ).fetchone()
-                            
-                            if not tag:
-                                # Tạo tag mới
-                                cursor = db.execute(
-                                    'INSERT INTO tags (name) VALUES (?)',
-                                    (tag_name,)
-                                )
-                                tag_id = cursor.lastrowid
-                            else:
-                                tag_id = tag['id']
-                            
-                            # Liên kết tag với bài viết
-                            db.execute(
-                                'INSERT INTO post_tags (post_id, tag_id) VALUES (?, ?)',
-                                (post_id, tag_id)
-                            )
+                # Xử lý tag
+                if tag:  # Kiểm tra nếu có tag
+                    # Kiểm tra xem tag đã tồn tại chưa
+                    tag_row = db.execute(
+                        'SELECT id FROM tags WHERE name = ?',
+                        (tag,)
+                    ).fetchone()
+                    
+                    if not tag_row:
+                        # Tạo tag mới
+                        cursor = db.execute(
+                            'INSERT INTO tags (name) VALUES (?)',
+                            (tag,)
+                        )
+                        tag_id = cursor.lastrowid
+                    else:
+                        tag_id = tag_row['id']
+                    
+                    # Liên kết tag với bài viết
+                    db.execute(
+                        'INSERT INTO post_tags (post_id, tag_id) VALUES (?, ?)',
+                        (post_id, tag_id)
+                    )
 
                 # Xử lý upload ảnh nếu có
                 if 'image' in request.files:
@@ -515,11 +514,11 @@ def delete_comment(comment_id):
 @bp.route('/search', methods=['GET'])
 def search():
     query = request.args.get('q', '')
-    selected_tags = request.args.getlist('tags')
+    selected_tag = request.args.get('tag', '')
     sort_by = request.args.get('sort', 'newest')
     
     # Chỉ chuyển hướng nếu không có bất kỳ tiêu chí tìm kiếm nào
-    if not query and not selected_tags:
+    if not query and not selected_tag:
         return redirect(url_for('blog.index'))
 
     db = get_db()
@@ -528,18 +527,14 @@ def search():
     base_query = '''
         SELECT DISTINCT p.id, p.title, p.description, p.created, p.author_id,
         u.username, bi.image_path,
-        (SELECT COUNT(*) FROM favorites f WHERE f.post_id = p.id) as like_count
+        (SELECT COUNT(*) FROM favorites f WHERE f.post_id = p.id) as like_count,
+        t.name as tag
         FROM post p
         JOIN user u ON p.author_id = u.id
         LEFT JOIN blog_images bi ON p.id = bi.post_id AND bi.is_main_image = 1
+        LEFT JOIN post_tags pt ON p.id = pt.post_id
+        LEFT JOIN tags t ON pt.tag_id = t.id
     '''
-    
-    # Add tag joins if tags are selected
-    if selected_tags:
-        base_query += '''
-            JOIN post_tags pt ON p.id = pt.post_id
-            JOIN tags t ON pt.tag_id = t.id
-        '''
     
     # Build WHERE clause
     conditions = []
@@ -549,10 +544,9 @@ def search():
         conditions.append('p.title LIKE ?')
         params.append(f'%{query}%')
     
-    if selected_tags:
-        placeholders = ','.join(['?' for _ in selected_tags])
-        conditions.append(f't.name IN ({placeholders})')
-        params.extend(selected_tags)
+    if selected_tag:
+        conditions.append('t.name = ?')
+        params.append(selected_tag)
     
     if conditions:
         base_query += ' WHERE ' + ' AND '.join(conditions)
@@ -567,17 +561,11 @@ def search():
     posts = db.execute(base_query, params).fetchall()
     posts = [dict(post) for post in posts]
     
-    # Get tags for each post
-    for post in posts:
-        tags = db.execute(
-            'SELECT t.id, t.name FROM tags t '
-            'JOIN post_tags pt ON t.id = pt.tag_id '
-            'WHERE pt.post_id = ?',
-            (post['id'],)
-        ).fetchall()
-        post['tags'] = [dict(tag) for tag in tags]
-    
-    return render_template('blog/search.html', posts=posts, query=query, selected_tags=selected_tags)
+    return render_template('blog/search.html', 
+                         posts=posts, 
+                         query=query, 
+                         selected_tag=selected_tag,
+                         sort_by=sort_by)
 
 @bp.route('/comment/<int:comment_id>/edit', methods=['POST'])
 @login_required

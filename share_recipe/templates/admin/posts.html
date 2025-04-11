@@ -1,3 +1,65 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block admin_title %}Quản lý bài viết{% endblock %}
+
+{% block admin_content %}
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="card-title mb-0">Danh sách bài viết</h5>
+        <div class="d-flex align-items-center">
+            <div class="me-3">
+                <select id="sort-posts" class="form-select">
+                    <option value="newest" {% if request.args.get('sort') == 'newest' %}selected{% endif %}>Mới nhất</option>
+                    <option value="oldest" {% if request.args.get('sort') == 'oldest' %}selected{% endif %}>Cũ nhất</option>
+                    <option value="likes" {% if request.args.get('sort') == 'likes' %}selected{% endif %}>Lượt thích</option>
+                </select>
+            </div>
+            <button type="button" class="btn btn-danger" id="delete-selected-posts">
+                <i class="fas fa-trash"></i> Xóa đã chọn
+            </button>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" id="select-all-posts"></th>
+                        <th>ID</th>
+                        <th>Tiêu đề</th>
+                        <th>Tác giả</th>
+                        <th>Ngày tạo</th>
+                        <th>Lượt thích</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for post in posts %}
+                    <tr>
+                        <td><input type="checkbox" class="select-post" value="{{ post['id'] }}"></td>
+                        <td>{{ post['id'] }}</td>
+                        <td>{{ post['title'] }}</td>
+                        <td>
+                            <div>{{ post['author_name'] }}</div>
+                            <small class="text-muted">{{ post['author_email'] }}</small>
+                        </td>
+                        <td>{{ post['created'].strftime('%d/%m/%Y %H:%M') }}</td>
+                        <td>{{ post['like_count'] }}</td>
+                        <td>
+                            <form action="{{ url_for('admin.delete_post', id=post['id']) }}" method="post" style="display: inline;">
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Bạn có chắc chắn muốn xóa bài viết này?')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const sortSelect = document.getElementById('sort-posts');
@@ -9,65 +71,42 @@
             sortSelect.value = sortOrder;
         }
 
-        // Add event listener to sort posts without refreshing
+        // Add event listener to sort posts
         sortSelect.addEventListener('change', function() {
             const selectedValue = sortSelect.value;
             const currentUrl = window.location.href.split('?')[0];
             window.location.href = `${currentUrl}?sort=${selectedValue}`;
         });
+
+        // Select all posts
+        const selectAllPosts = document.getElementById('select-all-posts');
+        const postCheckboxes = document.querySelectorAll('.select-post');
+        selectAllPosts.addEventListener('change', function() {
+            postCheckboxes.forEach(checkbox => checkbox.checked = this.checked);
+        });
+
+        // Delete selected posts
+        const deleteSelectedPosts = document.getElementById('delete-selected-posts');
+        deleteSelectedPosts.addEventListener('click', function() {
+            const selectedIds = Array.from(postCheckboxes)
+                .filter(checkbox => checkbox.checked)
+                .map(checkbox => checkbox.value);
+            if (selectedIds.length > 0) {
+                if (confirm('Bạn có chắc chắn muốn xóa các bài viết đã chọn?')) {
+                    fetch('/admin/delete_posts', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ ids: selectedIds })
+                    }).then(response => {
+                        if (response.ok) {
+                            location.reload();
+                        }
+                    });
+                }
+            }
+        });
     });
 </script>
-
-{% extends 'admin/base_admin.html' %}
-
-{% block admin_title %}Quản lý bài viết{% endblock %}
-
-{% block admin_content %}
-<div class="card">
-    <div class="card-header">
-        <h5 class="card-title mb-0">Danh sách bài viết</h5>
-    </div>
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-hover">
-                <thead>
-                    <tr>
-                        <th><input type="checkbox" id="select-all-posts"></th>
-                        <th>ID</th>
-                        <th>Tiêu đề</th>
-                        <th>Tác giả</th>
-                        <th>
-                            <div class="d-flex align-items-center">
-                                Ngày tạo
-                                <div class="ms-2">
-                                    <select id="sort-posts" class="form-select form-select-sm">
-                                        <option value="newest">Mới nhất</option>
-                                        <option value="oldest">Cũ nhất</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </th>
-                        <th>
-                            <button type="button" class="btn btn-danger" id="delete-selected-posts">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for post in posts %}
-                    <tr>
-                        <td><input type="checkbox" class="select-post" value="{{ post['id'] }}"></td>
-                        <td>{{ post['id'] }}</td>
-                        <td>{{ post['title'] }}</td>
-                        <td>{{ post['author_email'] }}</td>
-                        <td>{{ post['created'].strftime('%Y-%m-%d %H:%M') }}</td>
-                        <td></td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
 {% endblock %} 
