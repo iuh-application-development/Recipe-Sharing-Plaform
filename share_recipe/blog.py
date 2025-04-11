@@ -4,7 +4,7 @@ from flask import (
 from werkzeug.exceptions import abort
 import os
 from werkzeug.utils import secure_filename
-from datetime import datetime
+from datetime import datetime, timedelta
 import random
 
 from share_recipe.auth import login_required
@@ -358,6 +358,13 @@ def delete_multiple():
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)})
 
+def convert_utc_to_local(utc_dt):
+    """Convert UTC datetime to Vietnam timezone (UTC+7)"""
+    if utc_dt is None:
+        return None
+    local_tz = timedelta(hours=7)
+    return utc_dt + local_tz
+
 @bp.route('/<int:id>/detail', methods=('GET', 'POST'))
 def detail(id):
     try:
@@ -425,8 +432,10 @@ def detail(id):
         else:
             comments = db.execute(comments_query, (id,)).fetchall()
         
-        # Convert comments to list of dictionaries
+        # Convert comments to list of dictionaries and convert timezone
         comments = [dict(comment) for comment in comments]
+        for comment in comments:
+            comment['created'] = convert_utc_to_local(comment['created'])
         
         # Check if current user has favorited this post
         is_favorite = False

@@ -551,7 +551,7 @@ function handleReaction(commentId, reactionType) {
                             {% endif %}
                             <div class="comment-meta">
                                 <div class="comment-author">{{ comment.username }}</div>
-                                <div class="comment-date">{{ comment.created.strftime('%d/%m/%Y %H:%M') }}</div>
+                                <div class="comment-date">{{ comment.created.strftime('%d/%m/%Y %H:%M') }} (GMT+7)</div>
                             </div>
                         </div>
                         {% if g.user and comment.author_id == g.user.id %}
