@@ -372,8 +372,9 @@ def detail(id):
         if post is None:
             abort(404)
             
-        # Convert post to dictionary
+        # Convert post to dictionary and adjust timezone
         post = dict(post)
+        post['created'] = convert_utc_to_local(post['created'])
         
         db = get_db()
         
@@ -432,10 +433,25 @@ def detail(id):
         else:
             comments = db.execute(comments_query, (id,)).fetchall()
         
-        # Convert comments to list of dictionaries and convert timezone
+        # Convert comments to list of dictionaries and adjust timezone
         comments = [dict(comment) for comment in comments]
         for comment in comments:
             comment['created'] = convert_utc_to_local(comment['created'])
+        
+        # Get replies for each comment
+        for comment in comments:
+            replies = db.execute(
+                'SELECT r.*, u.username, u.avatar_path '
+                'FROM comment_replies r '
+                'JOIN user u ON r.author_id = u.id '
+                'WHERE r.comment_id = ? '
+                'ORDER BY r.created ASC',
+                (comment['id'],)
+            ).fetchall()
+            # Convert replies to list of dictionaries and adjust timezone
+            comment['replies'] = [dict(reply) for reply in replies]
+            for reply in comment['replies']:
+                reply['created'] = convert_utc_to_local(reply['created'])
         
         # Check if current user has favorited this post
         is_favorite = False
@@ -908,3 +924,63 @@ def category(category):
                          page=page,
                          total_pages=total_pages,
                          total_posts=total_posts)
+
+@bp.route('/comment/<int:comment_id>/reply', methods=['POST'])
+@login_required
+def reply_comment(comment_id):
+    content = request.form.get('content')
+    if not content:
+        abort(400, "Nội dung phản hồi không được để trống")
+
+    db = get_db()
+    try:
+        # Lấy thông tin comment gốc
+        comment = db.execute(
+            'SELECT c.*, p.id as post_id FROM comments c '
+            'JOIN post p ON c.post_id = p.id '
+            'WHERE c.id = ?',
+            (comment_id,)
+        ).fetchone()
+
+        if comment is None:
+            abort(404, "Bình luận không tồn tại.")
+
+        # Thêm reply vào database
+        db.execute(
+            'INSERT INTO comment_replies (comment_id, author_id, content) VALUES (?, ?, ?)',
+            (comment_id, g.user['id'], content)
+        )
+        db.commit()
+        
+        return redirect(url_for('blog.detail', id=comment['post_id']))
+    except Exception as e:
+        print(f"Error in reply_comment: {e}")
+        abort(500)
+
+@bp.route('/reply/<int:reply_id>/delete', methods=['POST'])
+@login_required
+def delete_reply(reply_id):
+    db = get_db()
+    try:
+        # Lấy thông tin reply và kiểm tra quyền xóa
+        reply = db.execute(
+            'SELECT r.*, c.post_id FROM comment_replies r '
+            'JOIN comments c ON r.comment_id = c.id '
+            'WHERE r.id = ?',
+            (reply_id,)
+        ).fetchone()
+
+        if reply is None:
+            abort(404, "Phản hồi không tồn tại.")
+        
+        # Chỉ cho phép người viết reply xóa reply của họ
+        if reply['author_id'] != g.user['id']:
+            abort(403, "Không có quyền xóa phản hồi này.")
+
+        db.execute('DELETE FROM comment_replies WHERE id = ?', (reply_id,))
+        db.commit()
+        
+        return redirect(url_for('blog.detail', id=reply['post_id']))
+    except Exception as e:
+        print(f"Error in delete_reply: {e}")
+        abort(500)

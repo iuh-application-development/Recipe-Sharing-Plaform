@@ -2,6 +2,7 @@ DROP TABLE IF EXISTS user;
 DROP TABLE IF EXISTS post;
 DROP TABLE IF EXISTS blog_images;
 DROP TABLE IF EXISTS comments;
+DROP TABLE IF EXISTS comment_replies;
 DROP TABLE IF EXISTS favorites;
 DROP TABLE IF EXISTS comment_reactions;
 DROP TABLE IF EXISTS saved_recipes;
@@ -54,6 +55,16 @@ CREATE TABLE comments (
     FOREIGN KEY (author_id) REFERENCES user (id)
 );
 
+CREATE TABLE comment_replies (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    comment_id INTEGER NOT NULL,
+    author_id INTEGER NOT NULL,
+    content TEXT NOT NULL,
+    created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (comment_id) REFERENCES comments (id) ON DELETE CASCADE,
+    FOREIGN KEY (author_id) REFERENCES user (id)
+);
+
 CREATE TABLE favorites (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL,
@@ -67,10 +78,11 @@ CREATE TABLE favorites (
 CREATE TABLE comment_reactions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     comment_id INTEGER NOT NULL,
-    user_id TEXT NOT NULL,
+    user_id INTEGER NOT NULL,
     reaction_type TEXT NOT NULL CHECK(reaction_type IN ('like', 'dislike')),
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (comment_id) REFERENCES comments (id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES user (id),
     UNIQUE(comment_id, user_id)
 );
 

@@ -369,6 +369,86 @@
     .recipe-actions button:active {
         transform: scale(0.95);
     }
+
+    .reply-form {
+        margin-left: 3.5rem;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .reply-actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+    }
+
+    .replies-section {
+        margin-left: 3.5rem;
+        margin-top: 1rem;
+    }
+
+    .reply-item {
+        padding: 0.75rem;
+        background: #f8f9fa;
+        border-radius: 4px;
+        margin-bottom: 0.5rem;
+    }
+
+    .reply-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+    }
+
+    .reply-header-left {
+        display: flex;
+        align-items: center;
+    }
+
+    .reply-avatar {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        margin-right: 0.75rem;
+    }
+
+    .reply-meta {
+        flex-grow: 1;
+    }
+
+    .reply-author {
+        font-weight: bold;
+        font-size: 0.875rem;
+    }
+
+    .reply-date {
+        font-size: 0.75rem;
+        color: #666;
+    }
+
+    .reply-content {
+        margin-left: 3.75rem;
+        font-size: 0.875rem;
+        color: #333;
+    }
+
+    .btn-delete-reply {
+        background: none;
+        border: none;
+        color: #dc3545;
+        cursor: pointer;
+        padding: 0.25rem;
+        font-size: 0.75rem;
+    }
+
+    .btn-delete-reply:hover {
+        color: #c82333;
+    }
+
+    .reply-btn {
+        margin-left: 1rem;
+    }
 </style>
 
 <script>
@@ -441,6 +521,15 @@ function handleReaction(commentId, reactionType) {
         }
     })
     .catch(error => console.error('Error:', error));
+}
+
+function toggleReplyForm(commentId) {
+    const replyForm = document.getElementById(`reply-form-${commentId}`);
+    if (replyForm.style.display === 'none') {
+        replyForm.style.display = 'block';
+    } else {
+        replyForm.style.display = 'none';
+    }
 }
 </script>
 {% endblock %}
@@ -584,6 +673,11 @@ function handleReaction(commentId, reactionType) {
                             <i class="fas fa-thumbs-down"></i>
                             <span id="dislike-count-{{ comment.id }}" class="reaction-count">{{ comment.dislikes_count }}</span>
                         </button>
+                        <button type="button" 
+                                class="reaction-btn reply-btn"
+                                onclick="toggleReplyForm({{ comment.id }})">
+                            <i class="fas fa-reply"></i> Trả lời
+                        </button>
                         {% else %}
                         <div class="reaction-stats">
                             <span class="reaction-stat">
@@ -598,6 +692,48 @@ function handleReaction(commentId, reactionType) {
                         <a href="{{ url_for('auth.login') }}" class="login-to-react">Đăng nhập để thích/không thích</a>
                         {% endif %}
                     </div>
+
+                    <!-- Reply form -->
+                    {% if g.user %}
+                    <div id="reply-form-{{ comment.id }}" class="reply-form" style="display: none;">
+                        <form action="{{ url_for('blog.reply_comment', comment_id=comment.id) }}" method="post">
+                            <textarea name="content" class="form-control" rows="2" required placeholder="Viết phản hồi của bạn..."></textarea>
+                            <div class="reply-actions">
+                                <button type="submit" class="btn btn-primary btn-sm">Gửi</button>
+                                <button type="button" class="btn btn-secondary btn-sm" onclick="toggleReplyForm({{ comment.id }})">Hủy</button>
+                            </div>
+                        </form>
+                    </div>
+                    {% endif %}
+
+                    <!-- Replies section -->
+                    {% if comment.replies %}
+                    <div class="replies-section">
+                        {% for reply in comment.replies %}
+                        <div class="reply-item">
+                            <div class="reply-header">
+                                <div class="reply-header-left">
+                                    {% if reply.avatar_path %}
+                                        <img src="{{ url_for('static', filename=reply.avatar_path) }}" class="reply-avatar" alt="Avatar">
+                                    {% endif %}
+                                    <div class="reply-meta">
+                                        <div class="reply-author">{{ reply.username }}</div>
+                                        <div class="reply-date">{{ reply.created.strftime('%d/%m/%Y %H:%M') }} (GMT+7)</div>
+                                    </div>
+                                </div>
+                                {% if g.user and reply.author_id == g.user.id %}
+                                <form action="{{ url_for('blog.delete_reply', reply_id=reply.id) }}" method="post" class="delete-reply-form" onsubmit="return confirm('Bạn có chắc chắn muốn xóa phản hồi này?');">
+                                    <button type="submit" class="btn-delete-reply">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                                {% endif %}
+                            </div>
+                            <div class="reply-content">{{ reply.content }}</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
                 </div>
 
                 {% if g.user and comment.author_id == g.user.id %}
