@@ -69,37 +69,92 @@ Nền tảng có giao diện thân thiện, dễ sử dụng và tương thích 
 
 ## **4. Cấu Trúc Cơ Sở Dữ Liệu**
 
-### **4.1. Bảng User**
+### **4.1. Bảng user**
 
-| Trường | Kiểu | Mô tả |
-|--------|------|--------|
-| id | Integer | Khóa chính |
-| username | Text | Tên đăng nhập |
-| password | Text | Mật khẩu đã mã hóa |
-| email | Text | Email người dùng |
-| created | Timestamp | Thời điểm tạo tài khoản |
-| avatar_path | Text | Đường dẫn ảnh đại diện |
+Trường       	Kiểu      	Mô tả
+id            	Integer   	Khóa chính
+username      	Text      	Tên đăng nhập
+password      	Text      	Mật khẩu đã mã hóa
+email         	Text      	Email người dùng
+created       	Timestamp 	Thời điểm tạo tài khoản
+avatar_path   	Text      	Đường dẫn ảnh đại diện
+role          	Text      	Vai trò (mặc định: user)
+is_blocked    	Boolean   	Trạng thái bị chặn
+gender        	Text      	Giới tính
+birthdate     	Date      	Ngày sinh
+phone         	Text      	Số điện thoại
 
-### **4.2. Bảng Post**
+### **4.2. Bảng post**
 
-| Trường | Kiểu | Mô tả |
-|--------|------|--------|
-| id | Integer | Khóa chính |
-| author_id | Integer | ID người tạo |
-| title | Text | Tên món ăn |
-| description | Text | Mô tả món ăn |
-| ingredients | Text | Nguyên liệu |
-| instructions | Text | Cách làm |
-| cooking_time | Integer | Thời gian nấu |
-| servings | Integer | Khẩu phần |
+Trường       	Kiểu      	Mô tả
+id            	Integer   	Khóa chính
+author_id     	Integer   	ID người tạo
+created       	Timestamp 	Thời điểm đăng bài
+title         	Text      	Tên món ăn
+description   	Text      	Mô tả món ăn
+ingredients   	Text      	Nguyên liệu
+instructions  	Text      	Cách làm
+cooking_time  	Integer   	Thời gian nấu
+servings      	Integer   	Khẩu phần
 
-### **4.3. Bảng Tags**
 
-| Trường | Kiểu | Mô tả |
-|--------|------|--------|
-| id | Integer | Khóa chính |
-| name | Text | Tên thẻ |
-| created | Timestamp | Thời điểm tạo |
+### **4.3. Bảng blog_images**
+
+Trường       	Kiểu      	Mô tả
+id            	Integer   	Khóa chính
+post_id       	Integer   	ID bài viết
+image_path    	Text      	Đường dẫn ảnh
+is_main_image 	Boolean   	Có phải ảnh chính không
+created       	Timestamp 	Thời điểm tải ảnh
+
+### **4.4. Bảng comments**
+Trường    	Kiểu      	Mô tả
+id         	Integer   	Khóa chính
+post_id    	Integer   	ID bài viết
+author_id  	Integer   	ID người bình luận
+content    	Text      	Nội dung bình luận
+created    	Timestamp 	Thời điểm bình luận
+
+### **4.5. Bảng comment_replies**
+Trường      	Kiểu      	Mô tả
+id           	Integer   	Khóa chính
+comment_id   	Integer   	ID bình luận gốc
+author_id    	Integer   	ID người trả lời
+content      	Text      	Nội dung trả lời
+created      	Timestamp 	Thời điểm tạo trả lời
+
+### **4.6. Bảng favorites**
+Trường     	Kiểu      	Mô tả
+id          	Integer   	Khóa chính
+user_id     	Integer   	ID người dùng
+post_id     	Integer   	ID bài viết yêu thích
+created_at  	Timestamp 	Thời điểm lưu yêu thích
+
+### **4.7. Bảng comment_reactions**
+Trường        	Kiểu      	Mô tả
+id             	Integer   	Khóa chính
+comment_id     	Integer   	ID bình luận
+user_id        	Integer   	ID người phản hồi
+reaction_type  	Text      	Loại phản ứng (like/dislike)
+created_at     	Timestamp 	Thời điểm tạo phản ứng
+
+### **4.8. Bảng saved_recipes**
+Trường    	Kiểu      	Mô tả
+id         	Integer   	Khóa chính
+user_id    	Integer   	ID người dùng
+post_id    	Integer   	ID bài viết lưu
+created    	Timestamp 	Thời điểm lưu công thức
+
+### **4.9. Bảng tags**
+Trường  	Kiểu      	Mô tả
+id       	Integer   	Khóa chính
+name     	Text      	Tên thẻ
+created  	Timestamp 	Thời điểm tạo
+
+### **4.10. Bảng post_tags**
+Trường  	Kiểu    	Mô tả
+post_id  	Integer 	ID bài viết
+tag_id   	Integer 	ID thẻ
 
 ## **5. Cài Đặt và Thiết Lập**
 
