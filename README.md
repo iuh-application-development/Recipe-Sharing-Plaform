@@ -62,7 +62,7 @@
 ### 3.3. Thiết kế hệ thống
 
 - **Use Case Diagram**  
-![Use Case Diagram](imageREADME/Picture.png)
+![Use Case Diagram](imageREADME/Picture.jpg)
 - **Thiết kế CSDL**  
 ![CSDL](imageREADME/Picture1.png)
 
