@@ -64,7 +64,7 @@
 - **Use Case Diagram**  
 
 - **Thiết kế CSDL**  
-![Use Case Diagram](imageREADME/Picture.png)
+![Use Case Diagram](imageREADME/Picture1.png)
 
 - **Thiết kế giao diện (screenshot các màn hình chính/wireframe)**  
 
