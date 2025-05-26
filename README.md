@@ -192,3 +192,18 @@
 
 ## 9. LINK VIDEO
 - [Link video](https://youtu.be/ZwjnFmcIpYs)
+
+## 10. Bảng phân công công việc 
+
+| Phần công công việc        | Trần Văn Huy | Nguyễn Thanh Quyền | Nguyễn Võ Đức | Huỳnh Long Hồ |
+|-----------------------|-------------|--------------------|---------------|-------------|
+| Đăng nhập / đăng ký | X           |                    |               |             |
+| Trang chủ            | X           | X                  |               | X           |
+| Trang tạo bài đăng   | X           |                    | X             | X           |
+| Giao diện thẻ các món ăn | X           | X                  |               |             |
+| Giao diện cá nhân    | X           |                    |               | X           |
+| Trang Admin         |             |                    | X             | X           |
+| Trang yêu thích món ăn |             | X                  | X             | X           |
+| Trang lưu món ăn     |             | X                  | X             | X           |
+| Tìm kiếm            | X           | X                  |               |             |
+| Comment             |             | X                  |               | X           |
