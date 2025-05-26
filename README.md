@@ -57,7 +57,8 @@
 **Quản trị viên**:  
 - Quản lý người dùng (thêm, xóa người dùng, đổi mật khẩu).  
 - Kiểm duyệt và xóa (có thể ẩn) công thức vi phạm.  
-- Phân tích thống kê người dùng và công thức.  
+- Phân tích thống kê người dùng và công thức.
+- Tài khoản mặc định của admin : Email :admin@example.com -- Mật khẩu  : admin123
 
 ### 3.3. Thiết kế hệ thống
 
