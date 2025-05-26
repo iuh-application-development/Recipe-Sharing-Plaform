@@ -64,36 +64,36 @@
 - **Use Case Diagram**  
 
 - **Thiết kế CSDL**  
-![Use Case Diagram](image/README/Picture.png)
+![Use Case Diagram](imageREADME/Picture.png)
 
 - **Thiết kế giao diện (screenshot các màn hình chính/wireframe)**  
 
 **Trang chủ**  
-![Trang chủ](image/README/Picture2.png)
+![Trang chủ](imageREADME/Picture2.png)
 
 **Giao diện đăng nhập**  
-![Giao diện đăng nhập](image/README/Picture3.png)
+![Giao diện đăng nhập](imageREADME/Picture3.png)
 
 **Giao diện đăng ký**  
-![Giao diện đăng ký](image/README/Picture4.png)
+![Giao diện đăng ký](imageREADME/Picture4.png)
 
 **Giao diện đăng bài viết**  
-![Giao diện đăng bài viết 1](image/README/Picture5.png)  
-![Giao diện đăng bài viết 2](image/README/Picture6.png)
+![Giao diện đăng bài viết 1](imageREADME/Picture5.png)  
+![Giao diện đăng bài viết 2](imageREADME/Picture6.png)
 
 **Giao diện người dùng và hồ sơ công thức**  
-![Giao diện người dùng](image/README/Picture7.png)
-![Giao diện công thưc người dùng](image/README/Picture8.png)
+![Giao diện người dùng](imageREADME/Picture7.png)
+![Giao diện công thưc người dùng](imageREADME/Picture8.png)
 
 **Giao diện món ăn ưa thích**  
-![Giao diện món ăn ưa thích](image/README/Picture9.png)
+![Giao diện món ăn ưa thích](imageREADME/Picture9.png)
 
 **Giao diện công thức đã lưu**  
-![Giao diện công thức đã lưu](image/README/Picture10.png)
+![Giao diện công thức đã lưu](imageREADME/Picture10.png)
 
 **Giao diện tìm kiếm**  
-![Giao diện tìm kiếm 1](image/README/Picture11.png)  
-![Giao diện tìm kiếm 2](image/README/Picture12.png)  
+![Giao diện tìm kiếm 1](imageREADME/Picture11.png)  
+![Giao diện tìm kiếm 2](imageREADME/Picture12.png)  
 
 
 ## 4. CÔNG CỤ VÀ CÔNG NGHỆ SỬ DỤNG
