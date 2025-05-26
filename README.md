@@ -62,9 +62,9 @@
 ### 3.3. Thiết kế hệ thống
 
 - **Use Case Diagram**  
-
+![Use Case Diagram](imageREADME/Picture.png)
 - **Thiết kế CSDL**  
-![Use Case Diagram](imageREADME/Picture1.png)
+![CSDL](imageREADME/Picture1.png)
 
 - **Thiết kế giao diện (screenshot các màn hình chính/wireframe)**  
 
