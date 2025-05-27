@@ -164,16 +164,28 @@ def admin_users():
 @login_required
 def profile():
     db = get_db()
-    # Lấy các bài viết của người dùng
+    q = request.args.get('q', '').strip()
+    sort = request.args.get('sort', 'newest')
+    params = [g.user['id']]
+    where_clause = 'WHERE p.author_id = ?'
+    if q:
+        where_clause += ' AND p.title LIKE ?'
+        params.append(f'%{q}%')
+    # Sắp xếp
+    if sort == 'oldest':
+        order_clause = 'ORDER BY p.created ASC'
+    elif sort == 'likes':
+        order_clause = 'ORDER BY like_count DESC'
+    else:
+        order_clause = 'ORDER BY p.created DESC'
     user_posts = db.execute(
-        'SELECT p.*, bi.image_path '
-        'FROM post p '
-        'LEFT JOIN blog_images bi ON p.id = bi.post_id AND bi.is_main_image = 1 '
-        'WHERE p.author_id = ? '
-        'ORDER BY p.created DESC',
-        (g.user['id'],)
+        f'SELECT p.*, bi.image_path, (SELECT COUNT(*) FROM favorites f WHERE f.post_id = p.id) as like_count '
+        f'FROM post p '
+        f'LEFT JOIN blog_images bi ON p.id = bi.post_id AND bi.is_main_image = 1 '
+        f'{where_clause} '
+        f'{order_clause}',
+        params
     ).fetchall()
-
     return render_template('auth/profile.html', user_posts=user_posts)
 
 @bp.route('/profile/edit', methods=('GET', 'POST'))

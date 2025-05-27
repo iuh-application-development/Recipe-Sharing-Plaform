@@ -22,12 +22,13 @@
                 <select name="tag" class="form-select">
                     <option value="">-- Tất cả loại món --</option>
                     <!-- Món ăn cơ bản -->
-                    <optgroup label="Món ăn cơ bản">
+                    <optgroup label="Món ăn ngon Việt Nam">
                         <option value="Món nước" {% if selected_tag == 'Món nước' %}selected{% endif %}>Món nước</option>
                         <option value="Món cuốn" {% if selected_tag == 'Món cuốn' %}selected{% endif %}>Món cuốn</option>
                         <option value="Món xào" {% if selected_tag == 'Món xào' %}selected{% endif %}>Món xào</option>
                         <option value="Món kho" {% if selected_tag == 'Món kho' %}selected{% endif %}>Món kho</option>
                         <option value="Món ăn truyền thống" {% if selected_tag == 'Món ăn truyền thống' %}selected{% endif %}>Món ăn truyền thống</option>
+                        <option value="Đặc sản vùng miền" {% if selected_tag == 'Đặc sản vùng miền' %}selected{% endif %}>Đặc sản vùng miền</option>                    
                     </optgroup>
 
                     <!-- Món chay -->
@@ -48,7 +49,7 @@
                     </optgroup>
 
                     <!-- Món theo dịp -->
-                    <optgroup label="Món theo dịp">
+                    <optgroup label="Món theo dịp lễ">
                         <option value="Món Tết" {% if selected_tag == 'Món Tết' %}selected{% endif %}>Món Tết</option>
                         <option value="Món Trung thu" {% if selected_tag == 'Món Trung thu' %}selected{% endif %}>Món Trung thu</option>
                         <option value="Món Giáng sinh" {% if selected_tag == 'Món Giáng sinh' %}selected{% endif %}>Món Giáng sinh</option>
@@ -56,7 +57,7 @@
                     </optgroup>
 
                     <!-- Món quốc tế -->
-                    <optgroup label="Món quốc tế">
+                    <optgroup label="Món ăn Tây">
                         <option value="Món Ý" {% if selected_tag == 'Món Ý' %}selected{% endif %}>Món Ý</option>
                         <option value="Món Pháp" {% if selected_tag == 'Món Pháp' %}selected{% endif %}>Món Pháp</option>
                         <option value="Món Mỹ" {% if selected_tag == 'Món Mỹ' %}selected{% endif %}>Món Mỹ</option>
