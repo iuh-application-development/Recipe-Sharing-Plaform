@@ -138,6 +138,8 @@
     ```bash
     Python run.py hoặc flask --app share_recipe run
     ```
+6. Web
+    Mở đường dẫn : http://127.0.0.1:5000
 
 ## 6. KIỂM THỬ
 
